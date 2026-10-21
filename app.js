@@ -1,12 +1,29 @@
 /* ===== PENGATURAN ===== */
-const TOTAL = 100; // jumlah kotak video
+const TOTAL = 1000; // jumlah kotak video
 
 const VIDEO_GRATIS = [
   { judul: "Video 1", src: "https://cdn2.videy.co/uefAp7kq1.mp4" }
+  { judul: "Video 2", src: "https://cdn.videy.co/vkWDbqQx1.mp4" }
+  { judul: "Video 3", src: "https://cdn2.videy.co/hQMEQSFA1.mp4" }
+  { judul: "Video 4", src: "https://cdn2.videy.co/la89kXyy1.mp4" }
+  { judul: "Video 5", src: "https://cdn2.videy.co/RWG0UAgb1.mp4" }
+  { judul: "Video 6", src: "https://cdn2.videy.co/DeDYR0201.mp4" }
+  { judul: "Video 7", src: "https://cdn2.videy.co/3RWgGtda1.mp4" }
+  { judul: "Video 8", src: "https://cdn.videy.co/ng7fprEa1.mp4" }
+  { judul: "Video 9", src: "https://cdn.videy.co/nGtfCO2T1.mp4" }
+  { judul: "Video 10", src: "https://cdn.videy.co/8c4ERpRT1.mp4" }
+  { judul: "Video 11", src: "https://cdn2.videy.co/5Ln0fkF91.mp4" }
+  { judul: "Video 2", src: "https://cdn2.videy.co/3RWgGtda1.mp4" }
 ];
 
 const VIDEO_VIP = [
-  { judul: "VIP 1", src: "https://cdn2.videy.co/uefAp7kq1.mp4" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/PpdjONcx1.mp4" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/VXauy5nr1.mp4" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/4g6A9W5d1.mp" }
+  { judul: "VIP 1", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" }
+
 ];
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
