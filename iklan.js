@@ -34,13 +34,4 @@ document.addEventListener("click", e => {
     h[key] = 0;
     simpanHitung(h);
   }
-}, true);
-const POPUNDER_SCRIPT = "https://abscloud.org/1/7dc0f51577c92b0e7166a7adf63b7a86";
-(function () {
-  if (!POPUNDER_SCRIPT || POPUNDER_SCRIPT.startsWith("ISI-")) return;
-  try { if (aktif()) return; } catch (e) {}
-  const s = document.createElement("script");
-  s.src = POPUNDER_SCRIPT;
-  s.async = true;
-  document.body.appendChild(s);
-})();
+
