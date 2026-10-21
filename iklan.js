@@ -34,4 +34,4 @@ document.addEventListener("click", e => {
     h[key] = 0;
     simpanHitung(h);
   }
-
+}, true);
