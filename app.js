@@ -27,7 +27,7 @@ const VIDEO_VIP = [
 ];
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
-const QRIS_GAMBAR = "";
+const QRIS_GAMBAR = "IMG-20261022-WA0006.jpg";
 
 const PAKET = [
   { id: "harian",  nama: "Harian",  harga: 1000,  hari: 1,   ket: "per hari" },
@@ -255,7 +255,7 @@ function renderBayar() {
   if (!p) { box.innerHTML = ""; return; }
   const order = "SE" + Date.now();
   box.innerHTML = `<div class="qr-card"><p>Scan QR untuk bayar <b>${rupiah(p.harga)}</b> (${p.nama})</p>
-    <div id="qr" class="qr"></div><small class="muted">Order: ${order}</small>
+    <div id="qr" class="qr ${QRIS_GAMBAR ? "gambar" : ""}"></div><small class="muted">Order: ${order}</small>
     <button class="btn" id="sudah">Saya Sudah Bayar</button></div>`;
   if (QRIS_GAMBAR) $("#qr").innerHTML = `<img src="${QRIS_GAMBAR}" alt="QRIS">`;
   else if (window.QRCode) new QRCode($("#qr"), { text: `SPESIAL-EDITION|${order}|${p.id}|${p.harga}`, width: 200, height: 200 });
@@ -268,6 +268,7 @@ function renderBayar() {
     else { toast("Pembayaran belum terdeteksi"); b.disabled = false; b.textContent = "Saya Sudah Bayar"; }
   };
   box.scrollIntoView({ behavior: "smooth" });
+
 }
 
 function aktifkan(p, order) {
