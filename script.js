@@ -1,10 +1,15 @@
 /* ===== PENGATURAN ===== */
 const TOTAL = 100; // jumlah kotak video
 
-// Isi video kamu di sini: {judul:"...", src:"link-video.mp4"}
-// Kalau kurang dari 100, sisanya diisi video contoh otomatis.
-const VIDEO_GRATIS = [];
-const VIDEO_VIP = [];
+const VIDEO_GRATIS = Array.from({ length: 100 }, (_, i) => ({
+  judul: "Video " + (i + 1),
+  src: "video/" + (i + 1) + ".mp4"
+}));
+
+const VIDEO_VIP = Array.from({ length: 100 }, (_, i) => ({
+  judul: "VIP " + (i + 1),
+  src: "vip/" + (i + 1) + ".mp4"
+}));
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
 const QRIS_GAMBAR = "";
