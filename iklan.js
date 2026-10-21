@@ -36,13 +36,3 @@ document.addEventListener("click", e => {
   }
 }, true);
 
-const POPUNDER_SCRIPT = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
-
-(function () {
-  if (!POPUNDER_SCRIPT || POPUNDER_SCRIPT.startsWith("ISI-")) return;
-  try { if (aktif()) return; } catch (e) {}
-  const s = document.createElement("script");
-  s.src = POPUNDER_SCRIPT;
-  s.async = true;
-  document.body.appendChild(s);
-})();
