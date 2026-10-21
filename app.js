@@ -13,7 +13,7 @@ const VIDEO_GRATIS = [
   { judul: "Video 9", src: "https://cdn.videy.co/nGtfCO2T1.mp4" },
   { judul: "Video 10", src: "https://cdn.videy.co/8c4ERpRT1.mp4" },
   { judul: "Video 11", src: "https://cdn2.videy.co/5Ln0fkF91.mp4" },
-  { judul: "Video 2", src: "https://cdn2.videy.co/3RWgGtda1.mp4" },
+  { judul: "Video 2", src: "https://cdn2.videy.co/3RWgGtda1.mp4" }
 ];
 
 const VIDEO_VIP = [
@@ -22,7 +22,7 @@ const VIDEO_VIP = [
   { judul: "VIP 1", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
   { judul: "VIP 1", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
   { judul: "VIP 1", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 1", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
+  { judul: "VIP 1", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" }
 
 ];
 
