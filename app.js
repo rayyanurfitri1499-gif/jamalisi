@@ -27,10 +27,10 @@ const VIDEO_VIP = [
 ];
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
-const QRIS_GAMBAR = "";
+const QRIS_GAMBAR = "qr_ID1024321060963_22.10.26_1792618564_1792618566399.jpeg";
 
 const PAKET = [
-  { id: "harian",  nama: "Harian",  harga: 10000,  hari: 1,   ket: "per hari" },
+  { id: "harian",  nama: "Harian",  harga: 1000,  hari: 1,   ket: "per hari" },
   { id: "bulanan", nama: "Bulanan", harga: 50000,  hari: 30,  ket: "per bulan" },
   { id: "tahunan", nama: "Tahunan", harga: 100000, hari: 365, ket: "per tahun" }
 ];
