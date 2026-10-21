@@ -1,6 +1,5 @@
 const SMARTLINK = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
-const POPUNDER_SCRIPT = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
-const KLIK_IKLAN = 1;
+const KLIK_IKLAN = 2;
 const PER_VIDEO = true;
 const TAMPIL_UNTUK_PELANGGAN = false;
 
@@ -37,6 +36,7 @@ document.addEventListener("click", e => {
   }
 }, true);
 
+const POPUNDER_SCRIPT = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
 (function () {
   if (!POPUNDER_SCRIPT || POPUNDER_SCRIPT.startsWith("ISI-")) return;
   try { if (aktif()) return; } catch (e) {}
