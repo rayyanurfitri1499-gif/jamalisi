@@ -27,7 +27,7 @@ const VIDEO_VIP = [
 ];
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
-const QRIS_GAMBAR = "qr_ID1024321060963_22.10.26_1792618564_1792618566399.jpeg";
+const QRIS_GAMBAR = "";
 
 const PAKET = [
   { id: "harian",  nama: "Harian",  harga: 1000,  hari: 1,   ket: "per hari" },
