@@ -86,3 +86,5 @@ input{font:inherit}
 
 #toast{position:fixed;left:50%;bottom:calc(var(--nav) + 24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#2b2149;border:1px solid var(--gold);padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:200;max-width:90%;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+.qr.gambar{width:100%;max-width:280px;height:auto;padding:10px}
+.qr.gambar img{width:100%;height:auto;display:block;border-radius:8px}
