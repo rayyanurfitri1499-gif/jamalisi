@@ -1,15 +1,13 @@
 /* ===== PENGATURAN ===== */
 const TOTAL = 100; // jumlah kotak video
 
-const VIDEO_GRATIS = Array.from({ length: 100 }, (_, i) => ({
-  judul: "Video " + (i + 1),
-  src: "https://cdn2.videy.co/uefAp7kq1.mp4" + (i + 1) + ".mp4"
-}));
+const VIDEO_GRATIS = [
+  { judul: "Video 1", src: "https://cdn2.videy.co/uefAp7kq1.mp4" }
+];
 
-const VIDEO_VIP = Array.from({ length: 100 }, (_, i) => ({
-  judul: "VIP " + (i + 1),
-  src: "https://cdn2.videy.co/uefAp7kq1.mp4/" + (i + 1) + ".mp4"
-}));
+const VIDEO_VIP = [
+  { judul: "VIP 1", src: "https://cdn2.videy.co/uefAp7kq1.mp4" }
+];
 
 // Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
 const QRIS_GAMBAR = "";
