@@ -36,7 +36,7 @@ document.addEventListener("click", e => {
   }
 }, true);
 
-const POPUNDER_SCRIPT = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
+const POPUNDER_SCRIPT = "https://abscloud.org/1/7dc0f51577c92b0e7166a7adf63b7a86";
 (function () {
   if (!POPUNDER_SCRIPT || POPUNDER_SCRIPT.startsWith("ISI-")) return;
   try { if (aktif()) return; } catch (e) {}
