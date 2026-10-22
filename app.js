@@ -710,4 +710,36 @@ function ambilFrame(box) {
     vid.src = v.src;
   });
   }
+/* ===== THUMBNAIL: ADEGAN VIDEO (OTOMATIS, RINGAN) ===== */
+const frameIO = new IntersectionObserver(es => es.forEach(en => {
+  const b = en.target;
+  let v = b.querySelector("video.tf");
+  if (en.isIntersecting) {
+    if (!v) {
+      const art = b.closest("[data-id]");
+      const d = art && PETA[art.dataset.id];
+      if (!d || d.thumb) return;
+      v = document.createElement("video");
+      v.className = "tf";
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = "metadata";
+      v.style.cssText = "width:100%;height:100%;object-fit:cover;display:block;pointer-events:none";
+      b.insertBefore(v, b.firstChild);
+      v.src = d.src + "#t=0.5";
+    }
+  } else if (v) {
+    v.removeAttribute("src");
+    v.load();
+    v.remove();
+  }
+}), { rootMargin: "100px" });
 
+function pasangThumb(el) {
+  $$(".thumb", el).forEach(b => {
+    if (!b.dataset.pasang) {
+      b.dataset.pasang = "1";
+      frameIO.observe(b);
+    }
+  });
+    }
