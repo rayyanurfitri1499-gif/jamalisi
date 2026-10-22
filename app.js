@@ -895,3 +895,39 @@ function cekKembaliBayar() {
 }
 
 cekKembaliBayar();
+
+/* ===== CEK PEMBAYARAN KE DOKU ===== */
+async function cekBayarServer() {
+  if (!SESI.token) return;
+  try {
+    const j = await panggil("/api/bayar/cek", {});
+    setSesi(SESI.token, j.user);
+  } catch (e) {}
+}
+
+function cekKembaliBayar() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has("bayar")) return;
+  history.replaceState(null, "", location.pathname);
+  pindah("langganan");
+  if (!SESI.token) return;
+  toast("Mengecek pembayaran...");
+  let n = 0;
+  const t = setInterval(async () => {
+    n++;
+    await cekBayarServer();
+    if (aktif()) {
+      clearInterval(t);
+      modePaket = false; paketPilih = null;
+      toast("Pembayaran berhasil! 🎉");
+      renderLangganan();
+    } else if (n >= 30) {
+      clearInterval(t);
+      toast("Pembayaran belum terdeteksi. Kalau sudah bayar, buka menu ini lagi sebentar lagi.");
+    }
+  }, 5000);
+}
+
+if (SESI.token) cekBayarServer().then(() => {
+  if (halaman === "langganan") renderLangganan();
+});
