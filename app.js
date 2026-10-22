@@ -98,71 +98,38 @@ const VIDEO_GRATIS = [
 ];
 
 const VIDEO_VIP = [
-  { judul: "VIP 1", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 2", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 3", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 4", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 5", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 16", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 17", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 18", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 19", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 20", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 21", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 22", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 23", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 24", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 25", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 26", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 27", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 28", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 29", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 30", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 31", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 32", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 33", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 34", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 35", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 36", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 37", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 38", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 39", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 40", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 41", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 42", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 43", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 44", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 45", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 46", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 47", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 48", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 49", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 50", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 51", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 52", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 53", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 54", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 55", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 56", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 57", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 58", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 59", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "VIP 60", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "VIP 61", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "VIP 62", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "VIP 63", src: "https://cdn2.videy.co/4g6A9W5d1.mp" },
-  { judul: "VIP 64", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" }
-  
+  { judul: "VIP 1", src: "https://cdn2.videy.co/W6hNlgN31.mp4" },
+  { judul: "VIP 2", src: "https://cdn2.videy.co/SQrqGBzs1.mp4" },
+  { judul: "VIP 3", src: "https://cdn2.videy.co/uE4dHtoo1.mp4" },
+  { judul: "VIP 4", src: "https://cdn2.videy.co/V1qGFXXg1.mp4" },
+  { judul: "VIP 5", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
+  { judul: "VIP 16", src: "https://cdn2.videy.co/xhTZhqMI1.mp4" },
+  { judul: "VIP 17", src: "https://cdn2.videy.co/CN7UiafM1.mp4" },
+  { judul: "VIP 18", src: "https://cdn2.videy.co/0saqBLol1.mp4" },
+  { judul: "VIP 19", src: "https://cdn.videy.co/Z7xWzYQY1.mp4" },
+  { judul: "VIP 20", src: "https://cdn2.videy.co/h0t4HV5w1.mp4" },
+  { judul: "VIP 21", src: "https://cdn2.videy.co/YAe2eUfg1.mp4" },
+  { judul: "VIP 22", src: "https://cdn2.videy.co/dcNX5HvY1.mp4" },
+  { judul: "VIP 23", src: "https://cdn2.videy.co/Pw8ZIL1m1.mp4" },
+  { judul: "VIP 24", src: "https://cdn2.videy.co/aElqOmoy1.mp4" },
+  { judul: "VIP 25", src: "https://cdn2.videy.co/2n0oxpz21.mp4" },
+  { judul: "VIP 26", src: "https://cdn2.videy.co/UkrN1N8v1.mp4" },
+  { judul: "VIP 27", src: "https://cdn2.videy.co/GDbd0m6l1.mp4" },
+  { judul: "VIP 28", src: "https://cdn2.videy.co/BojycdB31.mp4" },
+  { judul: "VIP 29", src: "https://cdn2.videy.co/lEGkspeP1.mp4" },
+  { judul: "VIP 30", src: "https://cdn2.videy.co/BFQfkbSh1.mp4" },
+  { judul: "VIP 31", src: "https://cdn2.videy.co/Rf3O22Ah1.mp4" },
+  { judul: "VIP 32", src: "https://cdn2.videy.co/cibxsxRU1.mp4" }
+
   
 ];
 
-// Kalau punya gambar QRIS sendiri, isi path-nya, misal "qris.png"
 const QRIS_GAMBAR = "IMG-20261022-WA0006.jpg";
 
 const PAKET = [
-  { id: "harian",  nama: "Harian",  harga: 1000,  hari: 1,   ket: "per hari" },
-  { id: "bulanan", nama: "Bulanan", harga: 50000,  hari: 30,  ket: "per bulan" },
-  { id: "tahunan", nama: "Tahunan", harga: 100000, hari: 365, ket: "per tahun" }
+  { id: "harian",  nama: "Harian",  harga: 10000,  hari: 1,   ket: "per hari" },
+  { id: "bulanan", nama: "Bulanan", harga: 250000,  hari: 30,  ket: "per bulan" },
+  { id: "tahunan", nama: "Tahunan", harga: 550000, hari: 365, ket: "per tahun" }
 ];
 
 const B = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/";
