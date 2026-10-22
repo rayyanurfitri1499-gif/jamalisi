@@ -120,7 +120,16 @@ const VIDEO_VIP = [
   { judul: "VIP 19", src: "https://cdn2.videy.co/lEGkspeP1.mp4" },
   { judul: "VIP 20", src: "https://cdn2.videy.co/BFQfkbSh1.mp4" },
   { judul: "VIP 21", src: "https://cdn2.videy.co/Rf3O22Ah1.mp4" },
-  { judul: "VIP 22", src: "https://cdn2.videy.co/cibxsxRU1.mp4" }
+  { judul: "VIP 22", src: "https://cdn2.videy.co/cibxsxRU1.mp4" },
+  { judul: "VIP 23", src: "https://cdn2.videy.co/GnCUfB0u1.mp4" },
+  { judul: "VIP 24", src: "https://cdn2.videy.co/zAts3Vab1.mp4" },
+  { judul: "VIP 25", src: "https://cdn2.videy.co/X7ljc0vu1.mp4" },
+  { judul: "VIP 26", src: "https://cdn2.videy.co/d2ZhqQTN1.mp4" },
+  { judul: "VIP 27", src: "https://cdn2.videy.co/6WhMzSa71.mp4" },
+  { judul: "VIP 28", src: "https://cdn2.videy.co/drZpWEio1.mp4" },
+  { judul: "VIP 29", src: "https://cdn2.videy.co/RA2SAdGR1.mp4" },
+  { judul: "VIP 38", src: "https://cdn2.videy.co/BojycdB31.mp4" },
+  
 
   
 ];
