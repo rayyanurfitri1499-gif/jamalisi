@@ -2,9 +2,9 @@ const TOTAL_GRATIS = 93;
 const TOTAL_VIP = 30;
 
 const VIDEO_GRATIS = [
-{ judul: "Video 1", src: "https://youtu.be/-Zz_zA5h-pk?si=K3ZrH-phWSt5Tdxc" },
-{ judul: "Video 2", src: "https://youtu.be/7KbKoOxRajs?si=o0PWQ3raAjLEFqcp" },
-{ judul: "Video 3", src: "https://youtu.be/qjLB1aL93wM?si=IhALsjKintmbHiuk" },
+{ judul: "MISI RAHASIA", src: "https://youtu.be/-Zz_zA5h-pk?si=K3ZrH-phWSt5Tdxc" },
+{ judul: "CEO DINGIN", src: "https://youtu.be/7KbKoOxRajs?si=o0PWQ3raAjLEFqcp" },
+{ judul: "PUTRI TIDUR", src: "https://youtu.be/qjLB1aL93wM?si=IhALsjKintmbHiuk" },
 
 ];
 
