@@ -1,5 +1,5 @@
 /* ===== PENGATURAN IKLAN ===== */
-const SMARTLINK = "https://asiafilm.org/4/1b597d65e3fa566d005f9a1ec5e6d385";
+const SMARTLINK = "";
 const KLIK_IKLAN = 1;
 const PER_VIDEO = true;
 const TAMPIL_UNTUK_PELANGGAN = false;
