@@ -639,7 +639,7 @@ pasangThumb($("#grid-home"));
       if (!ok) {
         const n = (Number(box.dataset.coba) || 0) + 1;
         box.dataset.coba = n;
-        if (n < 3 && box.isConnected) {
+        if (n < 10 && box.isConnected) {
           setTimeout(() => { antrianThumb.push(box); jalankanThumb(); }, 2000 * n);
         }
       }
