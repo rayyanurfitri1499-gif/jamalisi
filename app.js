@@ -457,3 +457,43 @@ function renderAkun() {
 renderSlider();
 renderGrid(HOME, $("#grid-home"));
 $("#jumlah").textContent = HOME.length + " video";
+
+/*kanjut*/
+function renderSlider() {
+  const s = $("#slider"), d = $("#dots"), list = HOME.slice(0, 5);
+  s.innerHTML = list.map(v => `<div class="slide" data-id="${v.id}">
+    <video muted loop playsinline preload="none" data-src="${v.src}" ${v.thumb ? `poster="${v.thumb}"` : ""}></video>
+    <div class="slide-info"><b>${esc(v.judul)}</b><span class="play-btn">▶ Tonton</span></div></div>`).join("");
+  d.innerHTML = list.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("");
+
+  const vids = $$("video", s);
+  let cur = 0;
+
+  function putar(i) {
+    vids.forEach((v, j) => {
+      if (j === i) {
+        if (!v.getAttribute("src")) v.src = v.dataset.src;
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+        if (v.getAttribute("src")) { v.removeAttribute("src"); v.load(); }
+      }
+    });
+  }
+
+  s.addEventListener("scroll", () => {
+    const i = Math.round(s.scrollLeft / s.clientWidth);
+    $$("i", d).forEach((x, j) => x.classList.toggle("on", i === j));
+    if (i !== cur) { cur = i; putar(i); }
+  });
+
+  putar(0);
+
+  setInterval(() => {
+    const modal = player.classList.contains("buka");
+    if (halaman !== "home" || modal) { vids[cur].pause(); return; }
+    if (vids[cur].paused) vids[cur].play().catch(() => {});
+    const i = (cur + 1) % list.length;
+    s.scrollTo({ left: i * s.clientWidth, behavior: "smooth" });
+  }, 5000);
+}
