@@ -1,5 +1,5 @@
 const TOTAL_GRATIS = 93;
-const TOTAL_VIP = 32;
+const TOTAL_VIP = 30;
 
 const VIDEO_GRATIS = [
   { judul: "Video 1", src: "https://cdn2.videy.co/hQMEQSFA1.mp4" },
@@ -128,7 +128,7 @@ const VIDEO_VIP = [
   { judul: "VIP 27", src: "https://cdn2.videy.co/6WhMzSa71.mp4" },
   { judul: "VIP 28", src: "https://cdn2.videy.co/drZpWEio1.mp4" },
   { judul: "VIP 29", src: "https://cdn2.videy.co/RA2SAdGR1.mp4" },
-  { judul: "VIP 38", src: "https://cdn2.videy.co/BojycdB31.mp4" },
+  { judul: "VIP 30", src: "https://cdn2.videy.co/BojycdB31.mp4" },
   
 
   
