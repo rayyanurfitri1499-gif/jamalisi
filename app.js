@@ -247,20 +247,6 @@ function renderGrid(list, el, kosong) {
   muatLagi(el);
              }
 
-const io = new IntersectionObserver(es => es.forEach(en => {
-  if (en.isIntersecting) {
-    const v = en.target;
-    v.src = v.dataset.src;
-    v.preload = "metadata";
-    io.unobserve(v);
-  }
-}), { rootMargin: "300px" });
-
-function renderGrid(list, el, kosong) {
-  el.innerHTML = list.length ? list.map(kartu).join("") : `<p class="kosong">${kosong || "Tidak ada video."}</p>`;
-  $$("video[data-src]", el).forEach(v => io.observe(v));
-}
-
 /* ===== SLIDER ===== */
 function renderSlider() {
   const s = $("#slider"), d = $("#dots"), list = HOME.slice(0, 5);
