@@ -856,7 +856,7 @@ function renderBayar() {
   if (!p) { box.innerHTML = ""; return; }
   box.innerHTML = `<div class="qr-card"><p>Paket <b>${p.nama}</b> · <b>${rupiah(p.harga)}</b></p>
     <p class="muted" style="margin-top:6px">Kamu akan diarahkan ke halaman pembayaran DOKU. Bayar dengan QRIS, lalu kembali ke situs ini. Langganan aktif otomatis.</p>
-    <button class="btn" id="btn-bayar">Bayar dengan QRIS</button></div>`;
+    <button class="btn" id="btn-bayar">Bayar Sekarang</button></div>`;
   $("#btn-bayar").onclick = async () => {
     const b = $("#btn-bayar");
     b.disabled = true; b.textContent = "Menyiapkan pembayaran...";
