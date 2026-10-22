@@ -634,7 +634,7 @@ muatLagi = function (el) {
 pasangThumb($("#grid-home"));
 
 /* ===== THUMBNAIL: VERSI PERBAIKAN ===== */
-
+  function jalankanThumb() {
   while (sedangThumb < MAKS_THUMB && antrianThumb.length) {
     const box = antrianThumb.shift();
     if (!box.isConnected || box.querySelector("canvas")) continue;
