@@ -706,7 +706,7 @@ async function panggil(path, body) {
   if (body) opsi.body = JSON.stringify(body);
   const r = await fetch(API + path, opsi);
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.error || "Gagal terhubung ke server");
+  if (!r.ok) throw new Error(j.error || ("Gagal terhubung ke server (" + r.status + ") " + API));
   return j;
 }
 
