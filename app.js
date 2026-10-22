@@ -190,7 +190,7 @@ const simpanUser = u => { const a = users(); a[u.email] = u; simpan("se_users", 
 const kunci = k => k + ":" + (emailAktif() || "tamu");
 const favs = () => baca(kunci("se_fav"), []);
 const riwayat = () => baca(kunci("se_riwayat"), []);
-const aktif = () => { const u = userAktif(); return !!(u && u.langganan && u.langganan.sampai > Date.now()); };
+const aktif = () => !!(SESI.user && SESI.user.aktif);
 
 async function hash(s) {
   if (!(window.crypto && crypto.subtle)) return btoa(unescape(encodeURIComponent(s)));
@@ -696,3 +696,157 @@ function ambilFrame(box) {
     vid.src = v.src;
   });
   }
+/* ===== SERVER AKUN ===== */
+const API = "https://quiet-hat-9fce.anjaniputrirahma1299.workers.dev";
+var SESI = { token: baca("se_token", ""), user: baca("se_user", null) };
+
+async function panggil(path, body) {
+  const opsi = { method: body ? "POST" : "GET", headers: { "Content-Type": "application/json" } };
+  if (SESI.token) opsi.headers.Authorization = "Bearer " + SESI.token;
+  if (body) opsi.body = JSON.stringify(body);
+  const r = await fetch(API + path, opsi);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || "Gagal terhubung ke server");
+  return j;
+}
+
+function setSesi(token, user) {
+  SESI.token = token || "";
+  SESI.user = user || null;
+  simpan("se_token", SESI.token);
+  simpan("se_user", SESI.user);
+  if (user) simpan("se_sesi", user.email);
+  else { try { localStorage.removeItem("se_sesi"); } catch (e) {} }
+}
+
+async function segarkanUser() {
+  if (!SESI.token) return;
+  try {
+    const j = await panggil("/api/saya");
+    setSesi(SESI.token, j.user);
+  } catch (e) {
+    if (/login/i.test(e.message)) setSesi("", null);
+  }
+}
+/* ===== AKUN (SERVER) ===== */
+function renderAkun() {
+  const el = $("#page-akun"), u = SESI.user;
+  if (!u) {
+    const d = modeAuth === "daftar";
+    el.innerHTML = `<div class="auth"><div class="tabs">
+      <button data-m="masuk" class="${d ? "" : "on"}">Masuk</button>
+      <button data-m="daftar" class="${d ? "on" : ""}">Daftar</button></div>
+      <form id="form-auth">
+        ${d ? '<input id="a-nama" placeholder="Nama" required>' : ""}
+        <input id="a-email" type="email" placeholder="Email" required>
+        <input id="a-pass" type="password" placeholder="Password (min 6 karakter)" minlength="6" required>
+        ${d ? '<p class="muted" style="margin-top:8px">Buat password khusus situs ini, jangan pakai password Gmail.</p>' : ""}
+        <button class="btn" type="submit">${d ? "Buat Akun" : "Masuk"}</button></form></div>`;
+    $$(".tabs button", el).forEach(b => b.onclick = () => { modeAuth = b.dataset.m; renderAkun(); });
+    $("#form-auth").onsubmit = async e => {
+      e.preventDefault();
+      const tombol = $("#form-auth button[type=submit]");
+      tombol.disabled = true;
+      try {
+        const body = { email: $("#a-email").value, pass: $("#a-pass").value };
+        if (d) body.nama = $("#a-nama").value;
+        const j = await panggil(d ? "/api/daftar" : "/api/masuk", body);
+        setSesi(j.token, j.user);
+        toast(d ? "Akun dibuat, selamat datang!" : "Berhasil masuk");
+        renderAkun();
+      } catch (err) {
+        toast(err.message);
+        tombol.disabled = false;
+      }
+    };
+    return;
+  }
+  const vip = aktif();
+  el.innerHTML = `<div class="profil"><div class="avatar">${esc((u.nama || "?")[0]).toUpperCase()}</div>
+    <h2>${esc(u.nama)}</h2><p class="muted">${esc(u.email)}</p>
+    <span class="badge ${vip ? "ok" : ""}">${vip ? "VIP sampai " + tgl(u.vip_sampai) : "Belum berlangganan"}</span></div>
+    <div class="auth"><h3>Ubah Nama</h3>
+      <form id="f-nama"><input id="n-baru" value="${esc(u.nama)}" required><button class="btn">Simpan</button></form></div>
+    <div class="menu-akun">
+      <button class="btn ghost" id="b-lang">Kelola Langganan</button>
+      <button class="btn ghost" id="b-hapus">Hapus Riwayat Tonton</button>
+      <button class="btn danger" id="b-keluar">Keluar</button></div>`;
+  $("#f-nama").onsubmit = async e => {
+    e.preventDefault();
+    try {
+      const j = await panggil("/api/nama", { nama: $("#n-baru").value });
+      setSesi(SESI.token, j.user);
+      toast("Nama diperbarui");
+      renderAkun();
+    } catch (err) { toast(err.message); }
+  };
+  $("#b-lang").onclick = () => pindah("langganan");
+  $("#b-hapus").onclick = () => { simpan(kunci("se_riwayat"), []); toast("Riwayat dihapus"); };
+  $("#b-keluar").onclick = async () => {
+    try { await panggil("/api/keluar", {}); } catch (e) {}
+    setSesi("", null);
+    modePaket = false; paketPilih = null;
+    toast("Kamu sudah keluar");
+    renderAkun();
+  };
+}
+/* ===== LANGGANAN (SERVER) ===== */
+function renderLangganan() {
+  const el = $("#page-langganan"), u = SESI.user;
+  if (!u) {
+    el.innerHTML = `<div class="kartu-info"><h2>💎 Langganan</h2>
+      <p class="muted" style="margin-top:8px">Masuk atau daftar dulu untuk berlangganan.</p>
+      <button class="btn" onclick="pindah('akun')">Masuk / Daftar</button></div>`;
+    return;
+  }
+  if (aktif() && !modePaket) {
+    el.innerHTML = `<div class="status-aktif">✅ Paket <b>${esc(u.paket || "VIP")}</b> aktif sampai ${tgl(u.vip_sampai)}</div>
+      <div class="sec-head"><h2>💎 Video Langganan</h2><span class="muted">${VIP.length} video</span></div>
+      <div id="grid-vip" class="grid"></div>
+      <button class="btn ghost" id="perpanjang">Perpanjang Langganan</button>`;
+    renderGrid(VIP, $("#grid-vip"));
+    $("#perpanjang").onclick = () => { modePaket = true; renderLangganan(); };
+    return;
+  }
+  el.innerHTML = `<div class="sec-head"><h2>💎 Pilih Paket Video Eksklusif</h2></div>
+    <div class="paket-list">${PAKET.map(p => `<button class="paket ${paketPilih === p.id ? "on" : ""}" data-paket="${p.id}">
+      <span class="p-nama">${p.nama}</span><span class="p-harga">${rupiah(p.harga)}</span><small>${p.ket}</small></button>`).join("")}</div>
+    <div id="bayar-box"></div>`;
+  $$(".paket", el).forEach(b => b.onclick = () => {
+    paketPilih = b.dataset.paket;
+    $$(".paket", el).forEach(x => x.classList.toggle("on", x === b));
+    renderBayar();
+  });
+  if (paketPilih) renderBayar();
+}
+
+function aktifkan(p, order) {
+  toast("Terima kasih! Langganan aktif setelah pembayaran dicek admin.");
+  modePaket = false; paketPilih = null;
+  renderLangganan();
+      }
+/* ===== AKTIVITAS (SERVER) ===== */
+function renderAktivitas() {
+  const el = $("#page-aktivitas");
+  const rw = riwayat().map(i => PETA[i]).filter(Boolean);
+  const fv = favs().map(i => PETA[i]).filter(Boolean);
+  const awal = SESI.user ? "Memuat..." : "Masuk untuk melihat pembayaran.";
+  el.innerHTML = `<div class="sec-head"><h2>🕘 Terakhir Ditonton</h2></div><div id="g-rw" class="grid"></div>
+    <div class="sec-head"><h2>⭐ Favorit</h2></div><div id="g-fv" class="grid"></div>
+    <div class="sec-head"><h2>🧾 Pembayaran</h2></div><div class="daftar" id="d-bayar"><p class="kosong">${awal}</p></div>`;
+  renderGrid(rw, $("#g-rw"), "Belum ada video yang ditonton.");
+  renderGrid(fv, $("#g-fv"), "Belum ada favorit.");
+  if (!SESI.user) return;
+  panggil("/api/pembayaran").then(j => {
+    const box = $("#d-bayar");
+    if (!box) return;
+    box.innerHTML = j.pembayaran.length
+      ? j.pembayaran.map(b => `<div class="baris"><span>${esc(b.paket)} · ${tgl(b.dibuat)} · ${esc(b.status)}</span><b>${rupiah(b.harga)}</b></div>`).join("")
+      : '<p class="kosong">Belum ada pembayaran.</p>';
+  }).catch(() => {});
+}
+
+segarkanUser().then(() => {
+  if (halaman === "langganan") renderLangganan();
+  if (halaman === "akun") renderAkun();
+});
