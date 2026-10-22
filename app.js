@@ -850,3 +850,48 @@ segarkanUser().then(() => {
   if (halaman === "langganan") renderLangganan();
   if (halaman === "akun") renderAkun();
 });
+/* ===== BAYAR DOKU ===== */
+function renderBayar() {
+  const p = PAKET.find(x => x.id === paketPilih), box = $("#bayar-box");
+  if (!p) { box.innerHTML = ""; return; }
+  box.innerHTML = `<div class="qr-card"><p>Paket <b>${p.nama}</b> · <b>${rupiah(p.harga)}</b></p>
+    <p class="muted" style="margin-top:6px">Kamu akan diarahkan ke halaman pembayaran DOKU. Bayar dengan QRIS, lalu kembali ke situs ini. Langganan aktif otomatis.</p>
+    <button class="btn" id="btn-bayar">Bayar dengan QRIS</button></div>`;
+  $("#btn-bayar").onclick = async () => {
+    const b = $("#btn-bayar");
+    b.disabled = true; b.textContent = "Menyiapkan pembayaran...";
+    try {
+      const j = await panggil("/api/bayar", { paket: p.id });
+      location.href = j.url;
+    } catch (err) {
+      toast(err.message);
+      b.disabled = false; b.textContent = "Bayar dengan QRIS";
+    }
+  };
+  box.scrollIntoView({ behavior: "smooth" });
+}
+
+function cekKembaliBayar() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has("bayar")) return;
+  history.replaceState(null, "", location.pathname);
+  pindah("langganan");
+  if (!SESI.token) return;
+  toast("Mengecek pembayaran...");
+  let n = 0;
+  const t = setInterval(async () => {
+    n++;
+    await segarkanUser();
+    if (aktif()) {
+      clearInterval(t);
+      modePaket = false; paketPilih = null;
+      toast("Pembayaran berhasil! 🎉");
+      renderLangganan();
+    } else if (n >= 40) {
+      clearInterval(t);
+      toast("Pembayaran belum terdeteksi. Kalau sudah bayar, buka menu ini lagi sebentar lagi.");
+    }
+  }, 3000);
+}
+
+cekKembaliBayar();
