@@ -2,99 +2,9 @@ const TOTAL_GRATIS = 93;
 const TOTAL_VIP = 30;
 
 const VIDEO_GRATIS = [
-  { judul: "Video 1", src: "https://cdn2.videy.co/hQMEQSFA1.mp4" },
-  { judul: "Video 2", src: "https://cdn2.videy.co/la89kXyy1.mp4" },
-  { judul: "Video 3", src: "https://cdn2.videy.co/DeDYR0201.mp4" },
-  { judul: "Video 4", src: "https://cdn2.videy.co/RWG0UAgb1.mp4" },
-  { judul: "Video 5", src: "https://cdn2.videy.co/uefAp7kq1.mp4" },
-  { judul: "Video 6", src: "https://cdn.videy.co/ng7fprEa1.mp4" },
-  { judul: "Video 7", src: "https://cdn.videy.co/nGtfCO2T1.mp4" },
-  { judul: "Video 8", src: "https://cdn.videy.co/8c4ERpRT1.mp4" },
-  { judul: "Video 9", src: "https://cdn.videy.co/6RSUDzRF1.mp4" },
-  { judul: "Video 10", src: "https://cdn.videy.co/vkWDbqQx1.mp4" },
-  { judul: "Video 11", src: "https://cdn2.videy.co/3RWgGtda1.mp4" },
-  { judul: "Video 12", src: "https://cdn2.videy.co/5Ln0fkF91.mp4" },
-  { judul: "Video 13", src: "https://cdn2.videy.co/P6ZGN8hN1.mp4" },
-  { judul: "Video 14", src: "https://cdn2.videy.co/Tm4jcOLe1.mp4" },
-  { judul: "Video 15", src: "https://cdn2.videy.co/VXauy5nr1.mp4" },
-  { judul: "Video 16", src: "https://cdn2.videy.co/IDQ0vDHG1.mp4" },
-  { judul: "Video 17", src: "https://cdn2.videy.co/PpdjONcx1.mp4" },
-  { judul: "Video 18", src: "https://cdn2.videy.co/oQHsDTGl1.mp4" },
-  { judul: "Video 19", src: "https://cdn2.videy.co/NVbzUHoV1.mp4" },
-  { judul: "Video 20", src: "https://cdn2.videy.co/n2yQ46g91.mp4" },
-  { judul: "Video 21", src: "https://cdn2.videy.co/G7La6ONC1.mp4" },
-  { judul: "Video 22", src: "https://cdn2.videy.co/H6JSxTQv1.mp4" },
-  { judul: "Video 23", src: "https://cdn2.videy.co/0jalroHL1.mp4" },
-  { judul: "Video 24", src: "https://cdn2.videy.co/FyplVPtM1.mp4" },
-  { judul: "Video 25", src: "https://cdn2.videy.co/5QagHpnk1.mp4" },
-  { judul: "Video 26", src: "https://cdn2.videy.co/Irz9KrnM1.mp4" },
-  { judul: "Video 27", src: "https://cdn2.videy.co/amoUSQDW1.mp4" },
-  { judul: "Video 28", src: "https://cdn2.videy.co/RPxYRASg1.mp4" },
-  { judul: "Video 29", src: "https://cdn2.videy.co/JXTVMHX41.mp4" },
-  { judul: "Video 30", src: "https://cdn2.videy.co/odnzf8v41.mp4" },
-  { judul: "Video 31", src: "https://cdn2.videy.co/fMzySq4C1.mp4" },
-  { judul: "Video 32", src: "https://cdn2.videy.co/W6hNlgN31.mp4" },
-  { judul: "Video 33", src: "https://cdn2.videy.co/xhTZhqMI1.mp4" },
-  { judul: "Video 34", src: "https://cdn2.videy.co/a3AUVuwO1.mp4" },
-  { judul: "Video 35", src: "https://cdn2.videy.co/CN7UiafM1.mp4" },
-  { judul: "Video 36", src: "https://cdn2.videy.co/6Tkrq1Uy1.mp4" },
-  { judul: "Video 37", src: "https://cdn2.videy.co/FGSUt0mG1.mp4" },
-  { judul: "Video 38", src: "https://cdn2.videy.co/WiHHbFGp1.mp4" },
-  { judul: "Video 39", src: "https://cdn2.videy.co/5CpoxzAy1.mp4" },
-  { judul: "Video 40", src: "https://cdn2.videy.co/NgfjpsIZ1.mp4" },
-  { judul: "Video 41", src: "https://cdn2.videy.co/SAGh4TqF1.mp4" },
-  { judul: "Video 42", src: "https://cdn2.videy.co/yb8c22fs1.mp4" },
-  { judul: "Video 43", src: "https://cdn2.videy.co/vFhZk1Se1.mp4" },
-  { judul: "Video 44", src: "https://cdn2.videy.co/aRinPp4E1.mp4" },
-  { judul: "Video 45", src: "https://cdn2.videy.co/yrhjAMlH1.mp4" },
-  { judul: "Video 46", src: "https://cdn2.videy.co/e3PFjjHj1.mp4" },
-  { judul: "Video 47", src: "https://cdn2.videy.co/zYuJslVZ1.mp4" },
-  { judul: "Video 48", src: "https://cdn2.videy.co/fAWdKmkH1.mp4" },
-  { judul: "Video 49", src: "https://cdn2.videy.co/hWIZUCFX1.mp4" },
-  { judul: "Video 50", src: "https://cdn2.videy.co/UdF6mXfo1.mp4" },
-  { judul: "Video 51", src: "https://cdn2.videy.co/UdF6mXfo1.mp4" },
-  { judul: "Video 52", src: "https://cdn2.videy.co/yvnRKnoV1.mp4" },
-  { judul: "Video 53", src: "https://cdn2.videy.co/MyhyXbQG1.mp4" },
-  { judul: "Video 54", src: "https://cdn2.videy.co/935MXSwd1.mp4" },
-  { judul: "Video 55", src: "https://cdn2.videy.co/Qp7SNJlZ1.mp4" },
-  { judul: "Video 56", src: "https://cdn2.videy.co/cX7TCNTM1.mp4" },
-  { judul: "Video 57", src: "https://cdn2.videy.co/YxPWooRB1.mp4" },
-  { judul: "Video 58", src: "https://cdn2.videy.co/okepGXdP1.mp4" },
-  { judul: "Video 59", src: "https://cdn2.videy.co/aTPSKV5h1.mp4" },
-  { judul: "Video 60", src: "https://cdn2.videy.co/jCZCoCR71.mp4" },
-  { judul: "Video 61", src: "https://cdn2.videy.co/OVLVPrbz1.mp4" },
-  { judul: "Video 62", src: "https://cdn2.videy.co/XKpZWWoH1.mp4" },
-  { judul: "Video 63", src: "https://cdn2.videy.co/6JOn1BAS1.mp4" },
-  { judul: "Video 64", src: "https://cdn2.videy.co/7ZLmmg7s1.mp4" },
-  { judul: "Video 65", src: "https://cdn2.videy.co/qwwfWwh21.mp4" },
-  { judul: "Video 66", src: "https://cdn2.videy.co/8T0meRU31.mp4" },
-  { judul: "Video 67", src: "https://cdn2.videy.co/Q1bezuTV1.mp4" },
-  { judul: "Video 68", src: "https://cdn2.videy.co/8RAfANWu1.mp4" },
-  { judul: "Video 69", src: "https://cdn2.videy.co/qXEN38iW1.mp4" },
-  { judul: "Video 70", src: "https://cdn2.videy.co/Qqpjrpje1.mp4" },
-  { judul: "Video 71", src: "https://cdn2.videy.co/kZYGapx01.mp4" },
-  { judul: "Video 72", src: "https://cdn2.videy.co/QdDzPMYq1.mp4" },
-  { judul: "Video 73", src: "https://cdn2.videy.co/gaCsnGFd1.mp4" },
-  { judul: "Video 74", src: "https://cdn2.videy.co/jvgNmLiS1.mp4" },
-  { judul: "Video 75", src: "https://cdn2.videy.co/qX597iT61.mp4" },
-  { judul: "Video 76", src: "https://cdn2.videy.co/UYvrJPyT1.mp4" },
-  { judul: "Video 77", src: "https://cdn2.videy.co/UOHQRDKV1.mp4" },
-  { judul: "Video 78", src: "https://cdn2.videy.co/FT4TYM0b1.mp4" },
-  { judul: "Video 79", src: "https://cdn2.videy.co/Nr8D1nky1.mp4" },
-  { judul: "Video 80", src: "https://cdn2.videy.co/o9u0p2Bl1.mp4" },
-  { judul: "Video 81", src: "https://cdn2.videy.co/CMFbSpp01.mp4" },
-  { judul: "Video 82", src: "https://cdn2.videy.co/HUxTGXfj1.mp4" },
-  { judul: "Video 83", src: "https://cdn2.videy.co/6d5qTLZJ1.mp4" },
-  { judul: "Video 84", src: "https://cdn2.videy.co/XA3rhe0X1.mp4" },
-  { judul: "Video 85", src: "https://cdn2.videy.co/Rw70lOUN1.mp4" },
-  { judul: "Video 86", src: "https://cdn2.videy.co/AAovM0bj1.mp4" },
-  { judul: "Video 87", src: "https://cdn2.videy.co/S2z7A71N1.mp4" },
-  { judul: "Video 88", src: "https://cdn2.videy.co/pcJBfrRs1.mp4" },
-  { judul: "Video 89", src: "https://cdn2.videy.co/eWqw9R4d1.mp4" },
-  { judul: "Video 90", src: "https://cdn.videy.co/M1NcBiQF1.mp4" },
-  { judul: "Video 91", src: "https://cdn2.videy.co/lIWiiz8i1.mp4" },
-  { judul: "Video 92", src: "https://cdn2.videy.co/LwBwU3jy1.mp4" },
-  { judul: "Video 93", src: "https://cdn2.videy.co/4C1pGxvE1.mp4" }
+{ judul: "Video 1", src: "https://youtu.be/-Zz_zA5h-pk?si=K3ZrH-phWSt5Tdxc" },
+{ judul: "Video 2", src: "https://youtu.be/7KbKoOxRajs?si=o0PWQ3raAjLEFqcp" },
+{ judul: "Video 3", src: "https://youtu.be/qjLB1aL93wM?si=IhALsjKintmbHiuk" },
 
 ];
 
@@ -931,3 +841,66 @@ function cekKembaliBayar() {
 if (SESI.token) cekBayarServer().then(() => {
   if (halaman === "langganan") renderLangganan();
 });
+/* ===== VIDEO YOUTUBE ===== */
+function ytId(src) {
+  const m = String(src || "").match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/|live\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+[...HOME, ...VIP].forEach(v => {
+  const id = ytId(v.src);
+  if (id && !v.thumb) v.thumb = "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+});
+
+renderGrid(HOME, $("#grid-home"));
+
+$$("#slider .slide").forEach(sl => {
+  const v = PETA[sl.dataset.id];
+  const vid = sl.querySelector("video");
+  if (!v || !vid || !ytId(v.src)) return;
+  vid.pause();
+  vid.removeAttribute("src");
+  vid.dataset.src = "";
+  vid.load();
+  const img = document.createElement("img");
+  img.src = v.thumb;
+  img.alt = "";
+  img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block";
+  sl.insertBefore(img, sl.firstChild);
+  vid.hidden = true;
+});
+
+const bukaVideoAsli = bukaVideo;
+bukaVideo = function (id) {
+  const v = PETA[id];
+  const yid = v && ytId(v.src);
+  if (!yid) return bukaVideoAsli(id);
+  if (v.vip && !aktif()) { toast("Video VIP, langganan dulu ya"); pindah("langganan"); return; }
+  sedang = v;
+  pv.pause();
+  pv.removeAttribute("src");
+  pv.hidden = true;
+  const lama = $("#yt");
+  if (lama) lama.remove();
+  const f = document.createElement("iframe");
+  f.id = "yt";
+  f.src = "https://www.youtube-nocookie.com/embed/" + yid + "?autoplay=1&playsinline=1&rel=0";
+  f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+  f.allowFullscreen = true;
+  f.style.cssText = "display:block;width:100%;aspect-ratio:16/9;border:0;background:#000";
+  pv.parentNode.insertBefore(f, pv);
+  $("#pjudul").textContent = v.judul;
+  player.classList.add("buka");
+  const r = riwayat().filter(x => x !== id);
+  r.unshift(id);
+  simpan(kunci("se_riwayat"), r.slice(0, 50));
+  updateFavBtn();
+};
+
+const tutupVideoAsli = tutupVideo;
+tutupVideo = function () {
+  const f = $("#yt");
+  if (f) f.remove();
+  pv.hidden = false;
+  tutupVideoAsli();
+};
