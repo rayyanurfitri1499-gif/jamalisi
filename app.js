@@ -710,3 +710,53 @@ function ambilFrame(box) {
     vid.src = v.src;
   });
   }
+/* ===== THUMBNAIL: AMBIL GAMBAR SAAT VIDEO MULAI JALAN ===== */
+function ambilFrame(box) {
+  return new Promise(res => {
+    const art = box.closest("[data-id]");
+    const v = art && PETA[art.dataset.id];
+    if (!v) return res(true);
+
+    const vid = document.createElement("video");
+    vid.muted = true;
+    vid.defaultMuted = true;
+    vid.playsInline = true;
+    vid.setAttribute("playsinline", "");
+    vid.preload = "auto";
+
+    let selesai = false;
+    let t = null;
+    const akhir = ok => {
+      if (selesai) return;
+      selesai = true;
+      clearTimeout(t);
+      try { vid.pause(); } catch (e) {}
+      vid.removeAttribute("src");
+      vid.load();
+      res(ok);
+    };
+    t = setTimeout(() => akhir(false), 25000);
+
+    const gambar = () => {
+      try {
+        if (!vid.videoWidth) return false;
+        const c = document.createElement("canvas");
+        c.width = 320;
+        c.height = Math.round(320 * vid.videoHeight / vid.videoWidth) || 240;
+        c.getContext("2d").drawImage(vid, 0, 0, c.width, c.height);
+        c.style.cssText = "width:100%;height:100%;object-fit:cover;display:block";
+        box.insertBefore(c, box.firstChild);
+        return true;
+      } catch (e) { return false; }
+    };
+
+    vid.addEventListener("playing", () => {
+      setTimeout(() => akhir(gambar()), 500);
+    });
+    vid.addEventListener("error", () => akhir(false));
+
+    vid.src = v.src;
+    const p = vid.play();
+    if (p && p.catch) p.catch(() => akhir(false));
+  });
+    }
