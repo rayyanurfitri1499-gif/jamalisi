@@ -138,7 +138,7 @@ const SAMPLE = ["BigBuckBunny","ElephantsDream","ForBiggerBlazes","ForBiggerEsca
 
 function buatDaftar(awal, vip, custom, total) {
   const arr = [];
-  const n = total || custom.length;
+  const n = custom.length || total;
   for (let i = 0; i < n; i++) {
     const c = custom[i];
     arr.push({
