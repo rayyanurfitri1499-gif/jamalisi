@@ -904,10 +904,4 @@ tutupVideo = function () {
   pv.style.display = "";
   tutupVideoAsli();
 };
-/* ===== LAYAR PENUH OTOMATIS MENDATAR ===== */
-document.addEventListener("fullscreenchange", () => {
-  const o = screen.orientation;
-  if (!o || !o.lock) return;
-  if (document.fullscreenElement) o.lock("landscape").catch(() => {});
-  else { try { o.unlock(); } catch (e) {} }
-});
+
