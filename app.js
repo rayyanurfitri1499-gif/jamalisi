@@ -388,7 +388,7 @@ function renderLangganan() {
     $("#perpanjang").onclick = () => { modePaket = true; renderLangganan(); };
     return;
   }
-  el.innerHTML = `<div class="sec-head"><h2>💎 Pilih Paket</h2></div>
+  el.innerHTML = `<div class="sec-head"><h2>💎 Pilih Paket Video Eksklusif</h2></div>
     <div class="paket-list">${PAKET.map(p => `<button class="paket ${paketPilih === p.id ? "on" : ""}" data-paket="${p.id}">
       <span class="p-nama">${p.nama}</span><span class="p-harga">${rupiah(p.harga)}</span><small>${p.ket}</small></button>`).join("")}</div>
     <div id="bayar-box"></div>`;
