@@ -639,7 +639,7 @@ pasangThumb($("#grid-home"));
         const n = (Number(box.dataset.coba) || 0) + 1;
         box.dataset.coba = n;
         if (n < 10 && box.isConnected) {
-          setTimeout(() => { antrianThumb.push(box); jalankanThumb(); }, 2000 * n);
+          setTimeout(() => { antrianThumb.push(box); jalankanThumb(); }, 80000 * n);
         }
       }
       jalankanThumb();
@@ -930,25 +930,3 @@ function cekKembaliBayar() {
 if (SESI.token) cekBayarServer().then(() => {
   if (halaman === "langganan") renderLangganan();
 });
-/* ===== THUMBNAIL: COBA ULANG SAAT DI-SCROLL LAGI ===== */
-function jalankanThumb() {
-  while (sedangThumb < MAKS_THUMB && antrianThumb.length) {
-    const box = antrianThumb.shift();
-    if (!box.isConnected || box.querySelector("canvas")) continue;
-    sedangThumb++;
-    ambilFrame(box).then(ok => {
-      sedangThumb--;
-      if (!ok && box.isConnected) {
-        const n = (Number(box.dataset.coba) || 0) + 1;
-        box.dataset.coba = n;
-        if (n < 10) {
-          setTimeout(() => { antrianThumb.push(box); jalankanThumb(); }, 3000);
-        } else {
-          box.dataset.coba = 0;
-          thumbIO.observe(box);
-        }
-      }
-      jalankanThumb();
-    });
-  }
-        }
