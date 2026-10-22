@@ -554,3 +554,80 @@ function renderSlider() {
     s.scrollTo({ left: i * s.clientWidth, behavior: "smooth" });
   }, 5000);
 }
+
+/* ===== THUMBNAIL OTOMATIS ===== */
+const antrianThumb = [];
+let sedangThumb = 0;
+const MAKS_THUMB = 2;
+
+function jalankanThumb() {
+  while (sedangThumb < MAKS_THUMB && antrianThumb.length) {
+    const box = antrianThumb.shift();
+    if (!box.isConnected) continue;
+    sedangThumb++;
+    ambilFrame(box).then(() => { sedangThumb--; jalankanThumb(); });
+  }
+}
+
+function ambilFrame(box) {
+  return new Promise(res => {
+    const art = box.closest("[data-id]");
+    const v = art && PETA[art.dataset.id];
+    if (!v) return res();
+    const vid = document.createElement("video");
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.preload = "metadata";
+    let selesai = false;
+    const akhir = () => {
+      if (selesai) return;
+      selesai = true;
+      vid.removeAttribute("src");
+      vid.load();
+      res();
+    };
+    const t = setTimeout(akhir, 8000);
+    vid.addEventListener("loadedmetadata", () => {
+      vid.currentTime = Math.min(1, (vid.duration || 2) / 2);
+    });
+    vid.addEventListener("seeked", () => {
+      try {
+        const c = document.createElement("canvas");
+        c.width = 320;
+        c.height = Math.round(320 * vid.videoHeight / vid.videoWidth) || 240;
+        c.getContext("2d").drawImage(vid, 0, 0, c.width, c.height);
+        c.style.cssText = "width:100%;height:100%;object-fit:cover;display:block";
+        box.insertBefore(c, box.firstChild);
+      } catch (e) {}
+      clearTimeout(t);
+      akhir();
+    });
+    vid.addEventListener("error", () => { clearTimeout(t); akhir(); });
+    vid.src = v.src;
+  });
+  }
+const thumbIO = new IntersectionObserver(es => es.forEach(en => {
+  if (en.isIntersecting) {
+    thumbIO.unobserve(en.target);
+    antrianThumb.push(en.target);
+    jalankanThumb();
+  }
+}), { rootMargin: "200px" });
+
+function pasangThumb(el) {
+  $$(".thumb", el).forEach(b => {
+    if (!b.querySelector("img") && !b.dataset.pasang) {
+      b.dataset.pasang = "1";
+      thumbIO.observe(b);
+    }
+  });
+}
+
+const muatLagiAsli = muatLagi;
+muatLagi = function (el) {
+  muatLagiAsli(el);
+  pasangThumb(el);
+};
+
+pasangThumb($("#grid-home"));
+
