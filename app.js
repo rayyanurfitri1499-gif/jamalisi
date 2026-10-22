@@ -586,7 +586,7 @@ function ambilFrame(box) {
       vid.load();
       res();
     };
-    const t = setTimeout(akhir, 8000);
+    const t = setTimeout(akhir, 80000);
     vid.addEventListener("loadedmetadata", () => {
       vid.currentTime = Math.min(1, (vid.duration || 2) / 2);
     });
