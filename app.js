@@ -1,4 +1,5 @@
-const TOTAL = 93;
+const TOTAL_GRATIS = 93;
+const TOTAL_VIP = 32;
 
 const VIDEO_GRATIS = [
   { judul: "Video 1", src: "https://cdn2.videy.co/hQMEQSFA1.mp4" },
@@ -135,9 +136,10 @@ const PAKET = [
 const B = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/";
 const SAMPLE = ["BigBuckBunny","ElephantsDream","ForBiggerBlazes","ForBiggerEscapes","ForBiggerFun","Sintel","TearsOfSteel"].map(n => B + n + ".mp4");
 
-function buatDaftar(awal, vip, custom) {
+function buatDaftar(awal, vip, custom, total) {
   const arr = [];
-  for (let i = 0; i < TOTAL; i++) {
+  const n = total || custom.length;
+  for (let i = 0; i < n; i++) {
     const c = custom[i];
     arr.push({
       id: awal + (i + 1),
@@ -149,8 +151,8 @@ function buatDaftar(awal, vip, custom) {
   }
   return arr;
 }
-const HOME = buatDaftar("h", false, VIDEO_GRATIS);
-const VIP = buatDaftar("v", true, VIDEO_VIP);
+const HOME = buatDaftar("h", false, VIDEO_GRATIS, TOTAL_GRATIS);
+const VIP = buatDaftar("v", true, VIDEO_VIP, TOTAL_VIP);
 const PETA = {};
 [...HOME, ...VIP].forEach(v => PETA[v.id] = v);
 
