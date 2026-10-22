@@ -558,7 +558,7 @@ function renderSlider() {
 /* ===== THUMBNAIL OTOMATIS ===== */
 const antrianThumb = [];
 let sedangThumb = 0;
-const MAKS_THUMB = 2;
+const MAKS_THUMB = 10;
 
 function jalankanThumb() {
   while (sedangThumb < MAKS_THUMB && antrianThumb.length) {
@@ -630,4 +630,73 @@ muatLagi = function (el) {
 };
 
 pasangThumb($("#grid-home"));
+
+/* ===== THUMBNAIL: VERSI PERBAIKAN ===== */
+function jalankanThumb() {
+  while (sedangThumb < MAKS_THUMB && antrianThumb.length) {
+    const box = antrianThumb.shift();
+    if (!box.isConnected || box.querySelector("canvas")) continue;
+    sedangThumb++;
+    ambilFrame(box).then(ok => {
+      sedangThumb--;
+      if (!ok) {
+        const n = (Number(box.dataset.coba) || 0) + 1;
+        box.dataset.coba = n;
+        if (n < 3 && box.isConnected) {
+          setTimeout(() => { antrianThumb.push(box); jalankanThumb(); }, 2000 * n);
+        }
+      }
+      jalankanThumb();
+    });
+  }
+}
+
+function ambilFrame(box) {
+  return new Promise(res => {
+    const art = box.closest("[data-id]");
+    const v = art && PETA[art.dataset.id];
+    if (!v) return res(true);
+
+    const vid = document.createElement("video");
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.preload = "auto";
+
+    let selesai = false;
+    let t = null;
+    const akhir = ok => {
+      if (selesai) return;
+      selesai = true;
+      clearTimeout(t);
+      vid.pause();
+      vid.removeAttribute("src");
+      vid.load();
+      res(ok);
+    };
+    t = setTimeout(() => akhir(false), 20000);
+
+    const gambar = () => {
+      try {
+        if (!vid.videoWidth) return akhir(false);
+        const c = document.createElement("canvas");
+        c.width = 320;
+        c.height = Math.round(320 * vid.videoHeight / vid.videoWidth) || 240;
+        c.getContext("2d").drawImage(vid, 0, 0, c.width, c.height);
+        c.style.cssText = "width:100%;height:100%;object-fit:cover;display:block";
+        box.insertBefore(c, box.firstChild);
+        akhir(true);
+      } catch (e) { akhir(false); }
+    };
+
+    vid.addEventListener("loadeddata", () => {
+      const d = vid.duration;
+      try { vid.currentTime = isFinite(d) && d > 2 ? Math.min(1.5, d / 2) : 0.1; } catch (e) {}
+    });
+    vid.addEventListener("seeked", () => {
+      requestAnimationFrame(() => requestAnimationFrame(gambar));
+    });
+    vid.addEventListener("error", () => akhir(false));
+    vid.src = v.src;
+  });
+  }
 
