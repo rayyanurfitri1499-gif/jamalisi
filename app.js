@@ -855,7 +855,7 @@ function renderBayar() {
   const p = PAKET.find(x => x.id === paketPilih), box = $("#bayar-box");
   if (!p) { box.innerHTML = ""; return; }
   box.innerHTML = `<div class="qr-card"><p>Paket <b>${p.nama}</b> · <b>${rupiah(p.harga)}</b></p>
-    <p class="muted" style="margin-top:6px">Kamu akan diarahkan ke halaman pembayaran DOKU. Bayar dengan QRIS, lalu kembali ke situs ini. Langganan aktif otomatis.</p>
+    <p class="muted" style="margin-top:6px">Kamu akan diarahkan ke halaman pembayaran DOKU. Pilih metode pembayaran, lalu kembali ke situs ini. Langganan aktif otomatis.</p>
     <button class="btn" id="btn-bayar">Bayar Sekarang</button></div>`;
   $("#btn-bayar").onclick = async () => {
     const b = $("#btn-bayar");
@@ -865,7 +865,7 @@ function renderBayar() {
       location.href = j.url;
     } catch (err) {
       toast(err.message);
-      b.disabled = false; b.textContent = "Bayar dengan QRIS";
+      b.disabled = false; b.textContent = "Bayar Sekarang";
     }
   };
   box.scrollIntoView({ behavior: "smooth" });
