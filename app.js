@@ -134,7 +134,7 @@ const VIDEO_VIP = [
   
 ];
 
-const QRIS_GAMBAR = "IMG-20261022-WA0006.jpg";
+const QRIS_GAMBAR = "";
 
 const PAKET = [
   { id: "harian",  nama: "Harian",  harga: 10000,  hari: 1,   ket: "per hari" },
