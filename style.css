@@ -88,3 +88,14 @@ input{font:inherit}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 .qr.gambar{width:100%;max-width:280px;height:auto;padding:10px}
 .qr.gambar img{width:100%;height:auto;display:block;border-radius:8px}
+
+.thumb{background:linear-gradient(135deg,#2a1457,#0b0714)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+body{background:#0b0714}
+.topbar{background:#0b0714}
+.bottom{background:#120c22}
+.topbar,.bottom{backdrop-filter:none;-webkit-backdrop-filter:none}
+.crown,.bottom button.on svg{filter:none}
+.page.aktif{animation:none}
+.paket.on{box-shadow:none}
+.kotak{content-visibility:auto;contain-intrinsic-size:auto 170px}
