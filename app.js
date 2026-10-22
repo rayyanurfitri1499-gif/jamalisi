@@ -849,7 +849,7 @@ function ytId(src) {
 
 [...HOME, ...VIP].forEach(v => {
   const id = ytId(v.src);
-  if (id && !v.thumb) v.thumb = "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+ if (id && !v.thumb) v.thumb = "https://i.ytimg.com/vi/" + id + "/mqdefault.jpg";
 });
 
 renderGrid(HOME, $("#grid-home"));
@@ -867,7 +867,7 @@ $$("#slider .slide").forEach(sl => {
   img.alt = "";
   img.style.cssText = "width:100%;height:100%;object-fit:cover;display:block";
   sl.insertBefore(img, sl.firstChild);
-  vid.hidden = true;
+  vid.style.display = "none";
 });
 
 const bukaVideoAsli = bukaVideo;
@@ -879,7 +879,7 @@ bukaVideo = function (id) {
   sedang = v;
   pv.pause();
   pv.removeAttribute("src");
-  pv.hidden = true;
+  pv.style.display = "none";
   const lama = $("#yt");
   if (lama) lama.remove();
   const f = document.createElement("iframe");
@@ -901,6 +901,6 @@ const tutupVideoAsli = tutupVideo;
 tutupVideo = function () {
   const f = $("#yt");
   if (f) f.remove();
-  pv.hidden = false;
+  pv.style.display = "";
   tutupVideoAsli();
 };
