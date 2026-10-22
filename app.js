@@ -143,7 +143,8 @@ function buatDaftar(awal, vip, custom) {
       id: awal + (i + 1),
       judul: c && c.judul ? c.judul : (vip ? "Video VIP " : "Video ") + (i + 1),
       src: c ? c.src : SAMPLE[i % SAMPLE.length],
-      vip: vip
+      vip: vip,
+      thumb: c && c.thumb ? c.thumb : ""
     });
   }
   return arr;
@@ -188,9 +189,10 @@ async function hash(s) {
 /* ===== KOTAK VIDEO ===== */
 function kartu(v) {
   const f = favs().includes(v.id);
+  const gambar = v.thumb ? `<img src="${v.thumb}" loading="lazy" decoding="async" alt="">` : "";
   return `<article class="kotak" data-id="${v.id}">
     <div class="thumb">
-      <video muted playsinline preload="none" data-src="${v.src}#t=1"></video>
+      ${gambar}
       <span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
       ${v.vip ? '<span class="vip">VIP</span>' : ""}
     </div>
@@ -199,6 +201,40 @@ function kartu(v) {
     </div>
   </article>`;
 }
+
+const PER_HALAMAN = 18;
+
+const sentinelIO = new IntersectionObserver(es => es.forEach(en => {
+  if (en.isIntersecting) {
+    const el = en.target.parentElement;
+    sentinelIO.unobserve(en.target);
+    en.target.remove();
+    muatLagi(el);
+  }
+}), { rootMargin: "500px" });
+
+function muatLagi(el) {
+  const next = el._list.slice(el._n, el._n + PER_HALAMAN);
+  el._n += next.length;
+  el.insertAdjacentHTML("beforeend", next.map(kartu).join(""));
+  if (el._n < el._list.length) {
+    const s = document.createElement("div");
+    s.style.cssText = "grid-column:1/-1;height:1px";
+    el.appendChild(s);
+    sentinelIO.observe(s);
+  }
+}
+
+function renderGrid(list, el, kosong) {
+  el._list = list;
+  el._n = 0;
+  el.innerHTML = "";
+  if (!list.length) {
+    el.innerHTML = `<p class="kosong">${kosong || "Tidak ada video."}</p>`;
+    return;
+  }
+  muatLagi(el);
+             }
 
 const io = new IntersectionObserver(es => es.forEach(en => {
   if (en.isIntersecting) {
@@ -218,20 +254,41 @@ function renderGrid(list, el, kosong) {
 function renderSlider() {
   const s = $("#slider"), d = $("#dots"), list = HOME.slice(0, 5);
   s.innerHTML = list.map(v => `<div class="slide" data-id="${v.id}">
-    <video src="${v.src}" muted loop autoplay playsinline preload="metadata"></video>
+    <video muted loop playsinline preload="none" data-src="${v.src}" ${v.thumb ? `poster="${v.thumb}"` : ""}></video>
     <div class="slide-info"><b>${esc(v.judul)}</b><span class="play-btn">▶ Tonton</span></div></div>`).join("");
   d.innerHTML = list.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("");
+
+  const vids = $$("video", s);
+  let cur = 0;
+
+  function putar(i) {
+    vids.forEach((v, j) => {
+      if (j === i) {
+        if (!v.getAttribute("src")) v.src = v.dataset.src;
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+        if (v.getAttribute("src")) { v.removeAttribute("src"); v.load(); }
+      }
+    });
+  }
+
   s.addEventListener("scroll", () => {
     const i = Math.round(s.scrollLeft / s.clientWidth);
     $$("i", d).forEach((x, j) => x.classList.toggle("on", i === j));
+    if (i !== cur) { cur = i; putar(i); }
   });
+
+  putar(0);
+
   setInterval(() => {
-    if (halaman !== "home" || player.classList.contains("buka")) return;
-    const i = (Math.round(s.scrollLeft / s.clientWidth) + 1) % list.length;
+    const modal = player.classList.contains("buka");
+    if (halaman !== "home" || modal) { vids[cur].pause(); return; }
+    if (vids[cur].paused) vids[cur].play().catch(() => {});
+    const i = (cur + 1) % list.length;
     s.scrollTo({ left: i * s.clientWidth, behavior: "smooth" });
   }, 5000);
-}
-
+    }
 /* ===== PLAYER ===== */
 const player = $("#player"), pv = $("#pv");
 let sedang = null;
