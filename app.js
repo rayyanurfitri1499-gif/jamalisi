@@ -6,36 +6,7 @@ const VIDEO_GRATIS = [
 ];
 
 const VIDEO_VIP = [
-  { judul: "VIP 1", src: "https://cdn2.videy.co/W6hNlgN31.mp4" },
-  { judul: "VIP 2", src: "https://cdn2.videy.co/SQrqGBzs1.mp4" },
-  { judul: "VIP 3", src: "https://cdn2.videy.co/uE4dHtoo1.mp4" },
-  { judul: "VIP 4", src: "https://cdn2.videy.co/V1qGFXXg1.mp4" },
-  { judul: "VIP 5", src: "https://cdn2.videy.co/l3VVHd7a1.mp4" },
-  { judul: "VIP 6", src: "https://cdn2.videy.co/xhTZhqMI1.mp4" },
-  { judul: "VIP 7", src: "https://cdn2.videy.co/CN7UiafM1.mp4" },
-  { judul: "VIP 8", src: "https://cdn2.videy.co/0saqBLol1.mp4" },
-  { judul: "VIP 9", src: "https://cdn.videy.co/Z7xWzYQY1.mp4" },
-  { judul: "VIP 10", src: "https://cdn2.videy.co/h0t4HV5w1.mp4" },
-  { judul: "VIP 11", src: "https://cdn2.videy.co/YAe2eUfg1.mp4" },
-  { judul: "VIP 12", src: "https://cdn2.videy.co/dcNX5HvY1.mp4" },
-  { judul: "VIP 13", src: "https://cdn2.videy.co/Pw8ZIL1m1.mp4" },
-  { judul: "VIP 14", src: "https://cdn2.videy.co/aElqOmoy1.mp4" },
-  { judul: "VIP 15", src: "https://cdn2.videy.co/2n0oxpz21.mp4" },
-  { judul: "VIP 16", src: "https://cdn2.videy.co/UkrN1N8v1.mp4" },
-  { judul: "VIP 17", src: "https://cdn2.videy.co/GDbd0m6l1.mp4" },
-  { judul: "VIP 18", src: "https://cdn2.videy.co/BojycdB31.mp4" },
-  { judul: "VIP 19", src: "https://cdn2.videy.co/lEGkspeP1.mp4" },
-  { judul: "VIP 20", src: "https://cdn2.videy.co/BFQfkbSh1.mp4" },
-  { judul: "VIP 21", src: "https://cdn2.videy.co/Rf3O22Ah1.mp4" },
-  { judul: "VIP 22", src: "https://cdn2.videy.co/cibxsxRU1.mp4" },
-  { judul: "VIP 23", src: "https://cdn2.videy.co/GnCUfB0u1.mp4" },
-  { judul: "VIP 24", src: "https://cdn2.videy.co/zAts3Vab1.mp4" },
-  { judul: "VIP 25", src: "https://cdn2.videy.co/X7ljc0vu1.mp4" },
-  { judul: "VIP 26", src: "https://cdn2.videy.co/d2ZhqQTN1.mp4" },
-  { judul: "VIP 27", src: "https://cdn2.videy.co/6WhMzSa71.mp4" },
-  { judul: "VIP 28", src: "https://cdn2.videy.co/drZpWEio1.mp4" },
-  { judul: "VIP 29", src: "https://cdn2.videy.co/RA2SAdGR1.mp4" },
-  { judul: "VIP 30", src: "https://cdn2.videy.co/BojycdB31.mp4" },
+
   
 
   
