@@ -613,3 +613,64 @@
   aturMode();
   muatDrama();
 })();
+/* ===== NOTIF INSTALL APLIKASI (VERSI BARU) ===== */
+(function () {
+  const ua = navigator.userAgent;
+  const hp = /android|iphone|ipad|ipod/i.test(ua);
+  const iOS = /iphone|ipad|ipod/i.test(ua);
+  const inApp = /FBAN|FBAV|Instagram|Line\/|TikTok|musical_ly|WhatsApp|Telegram/i.test(ua);
+  const terpasang = () => window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  const KUNCI = "se_pasang_tutup";
+  let ajakan = null;
+
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); ajakan = e; });
+  window.addEventListener("appinstalled", () => { sembunyi(); toast("Aplikasi berhasil di-install 🎉"); });
+
+  const bar = document.createElement("div");
+  bar.id = "pasang-app";
+  bar.innerHTML = '<img src="icon-192.png" alt="">' +
+    '<div class="pa-teks"><b>Install Spesial Edition</b><span>Nonton lebih cepat langsung dari layar HP</span></div>' +
+    '<button class="pa-btn" type="button">Install</button>' +
+    '<button class="pa-x" type="button" aria-label="Tutup">✕</button>';
+  document.body.appendChild(bar);
+
+  function tampil() { if (!terpasang()) bar.classList.add("buka"); }
+  function sembunyi() { bar.classList.remove("buka"); }
+
+  async function pasang() {
+    if (ajakan) {
+      ajakan.prompt();
+      const hasil = await ajakan.userChoice.catch(() => ({}));
+      ajakan = null;
+      if (hasil.outcome === "accepted") sembunyi();
+      return;
+    }
+    if (inApp) toast("Buka situs ini di Chrome dulu: tekan ⋮ lalu 'Buka di browser'");
+    else if (iOS) toast("Tekan tombol Bagikan ⬆️ di Safari, lalu 'Tambahkan ke Layar Utama'");
+    else toast("Tekan menu ⋮ di kanan atas Chrome, lalu 'Instal aplikasi' atau 'Tambahkan ke layar utama'");
+  }
+  window.pasangAplikasi = pasang;
+
+  bar.querySelector(".pa-btn").onclick = pasang;
+  bar.querySelector(".pa-x").onclick = () => { simpan(KUNCI, Date.now()); sembunyi(); };
+
+  const ditutup = baca(KUNCI, 0);
+  if (hp && !terpasang() && Date.now() - ditutup > 864e5) setTimeout(tampil, 4000);
+
+  if (typeof renderAkun === "function") {
+    const renderAkunSblm = renderAkun;
+    renderAkun = function () {
+      renderAkunSblm();
+      if (terpasang()) return;
+      const el = $("#page-akun");
+      if (!el || $("#akun-pasang")) return;
+      const b = document.createElement("button");
+      b.id = "akun-pasang";
+      b.className = "btn ghost";
+      b.textContent = "📲 Install aplikasi";
+      b.onclick = pasang;
+      el.appendChild(b);
+    };
+    if (halaman === "akun") renderAkun();
+  }
+})();
