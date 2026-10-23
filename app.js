@@ -896,3 +896,65 @@ renderAkun = function () {
   if (!SESI.user) pasangTombolGoogle();
 };
 if (halaman === "akun") renderAkun();
+/* ===== TOMBOL INSTALL APLIKASI ===== */
+(function () {
+  const sudahInstall = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  if (sudahInstall) return;
+  const KUNCI_TUTUP = "se_install_tutup";
+  const ditutup = baca(KUNCI_TUTUP, 0);
+  if (Date.now() - ditutup < 3 * 864e5) return;
+
+  const ua = navigator.userAgent;
+  const iOS = /iphone|ipad|ipod/i.test(ua);
+  const inApp = /FBAN|FBAV|Instagram|Line\/|TikTok|musical_ly|WhatsApp|Telegram/i.test(ua);
+  let promptInstall = null;
+
+  const bar = document.createElement("div");
+  bar.id = "install-bar";
+  bar.innerHTML = `<img src="icon-192.png" alt="">
+    <div class="ib-teks"><b>Install Spesial Edition</b><span>Buka lebih cepat dari layar HP</span></div>
+    <button class="ib-btn" id="ib-pasang">Install</button>
+    <button class="ib-x" id="ib-tutup" aria-label="Tutup">✕</button>`;
+
+  function tampil() {
+    if (!document.body.contains(bar)) document.body.appendChild(bar);
+    requestAnimationFrame(() => bar.classList.add("buka"));
+  }
+  function sembunyi() {
+    bar.classList.remove("buka");
+  }
+
+   window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    promptInstall = e;
+    tampil();
+  });
+
+  window.addEventListener("appinstalled", () => {
+    sembunyi();
+    toast("Aplikasi berhasil di-install 🎉");
+  });
+
+  if (iOS || inApp) setTimeout(tampil, 1500);
+
+  bar.addEventListener("click", async e => {
+    if (e.target.closest("#ib-tutup")) {
+      simpan(KUNCI_TUTUP, Date.now());
+      sembunyi();
+      return;
+    }
+    if (!e.target.closest("#ib-pasang")) return;
+    if (promptInstall) {
+      promptInstall.prompt();
+      const hasil = await promptInstall.userChoice;
+      promptInstall = null;
+      if (hasil.outcome === "accepted") sembunyi();
+    } else if (inApp) {
+      toast("Buka situs ini di Chrome dulu: tekan ⋮ lalu 'Buka di browser'");
+    } else if (iOS) {
+      toast("Tekan tombol Bagikan ⬆️ di Safari, lalu 'Tambahkan ke Layar Utama'");
+    } else {
+      toast("Tekan menu ⋮ di Chrome, lalu 'Instal aplikasi'");
+    }
+  });
+})();
