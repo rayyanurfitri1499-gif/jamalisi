@@ -964,3 +964,56 @@ const KONTAK_TELEGRAM = "Anying1299";
   $("#chat-tutup").onclick = () => sheet.classList.remove("buka");
   sheet.addEventListener("click", e => { if (e.target === sheet) sheet.classList.remove("buka"); });
 })();
+/* ===== LOGIN GOOGLE ===== */
+const GOOGLE_CLIENT_ID = "441485549354-ctpkcfksaio3cvb7lopsi7in04378akp.apps.googleusercontent.com";
+let googleSiap = null;
+
+function muatGoogle() {
+  if (googleSiap) return googleSiap;
+  googleSiap = new Promise((ok, gagal) => {
+    if (window.google && google.accounts && google.accounts.id) return ok();
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.onload = () => ok();
+    s.onerror = () => { googleSiap = null; gagal(new Error("Gagal memuat Google")); };
+    document.head.appendChild(s);
+  }).then(() => {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: async resp => {
+        try {
+          const j = await panggil("/api/masuk-google", { credential: resp.credential });
+          setSesi(j.token, j.user);
+          toast("Berhasil masuk dengan Google");
+          renderAkun();
+        } catch (err) { toast(err.message); }
+      }
+    });
+  });
+  return googleSiap;
+}
+
+function pasangTombolGoogle() {
+  const auth = $("#page-akun .auth");
+  if (!auth || $("#g-btn")) return;
+  const wadah = document.createElement("div");
+  wadah.innerHTML = '<div id="g-btn" style="display:flex;justify-content:center;min-height:44px"></div>' +
+    '<p class="muted" style="text-align:center;margin:12px 0 4px">atau pakai email</p>';
+  auth.insertBefore(wadah, auth.firstChild);
+  muatGoogle().then(() => {
+    const el = $("#g-btn");
+    if (!el) return;
+    google.accounts.id.renderButton(el, {
+      theme: "filled_black", size: "large", shape: "pill", text: "continue_with",
+      width: Math.max(200, Math.min(360, (auth.clientWidth || 320) - 24))
+    });
+  }).catch(err => toast(err.message));
+}
+
+const renderAkunAsli = renderAkun;
+renderAkun = function () {
+  renderAkunAsli();
+  if (!SESI.user) pasangTombolGoogle();
+};
+if (halaman === "akun") renderAkun();
