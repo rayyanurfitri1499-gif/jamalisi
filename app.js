@@ -575,7 +575,7 @@ function ambilFrame(box) {
   });
   }
 /* ===== SERVER AKUN ===== */
-const API = "https://twilight-hill-afc4.yuliantiyunita1599.workers.dev";
+const API = "https://silent-scene-2819.yuliantiyunita1599.workers.dev";
 var SESI = { token: baca("se_token", ""), user: baca("se_user", null) };
 
 async function panggil(path, body) {
