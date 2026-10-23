@@ -106,3 +106,12 @@ body{background:#0b0714}
 .chat-opsi{display:block;padding:14px;border-radius:12px;font-weight:800;text-decoration:none;color:#fff}
 .chat-opsi.wa{background:#1fa855}
 .chat-opsi.tg{background:#2a9fd8}
+/* ===== TOMBOL INSTALL ===== */
+#install-bar{position:fixed;left:12px;right:12px;bottom:calc(var(--nav) + 12px + env(safe-area-inset-bottom));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;background:#1a1330;border:1px solid var(--gold);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5);transform:translateY(160%);transition:transform .3s}
+#install-bar.buka{transform:none}
+#install-bar img{width:42px;height:42px;border-radius:10px;flex:none}
+.ib-teks{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ib-teks b{font-size:14px}
+.ib-teks span{font-size:12px;color:var(--redup)}
+.ib-btn{padding:9px 16px;border-radius:99px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700}
+.ib-x{width:32px;height:32px;border-radius:50%;color:var(--redup);font-size:14px;flex:none}
