@@ -696,7 +696,7 @@ function ambilFrame(box) {
   });
   }
 /* ===== SERVER AKUN ===== */
-const API = "https://black-dew-13f8.anjaniputrirahma1299.workers.dev";
+const API = "https://still-shape-a03d.anjaniputrirahma1299.workers.dev";
 var SESI = { token: baca("se_token", ""), user: baca("se_user", null) };
 
 async function panggil(path, body) {
