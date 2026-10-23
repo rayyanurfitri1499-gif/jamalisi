@@ -575,7 +575,7 @@ function ambilFrame(box) {
   });
   }
 /* ===== SERVER AKUN ===== */
-const API = "https://still-shape-a03d.anjaniputrirahma1299.workers.dev";
+const API = "https://twilight-hill-afc4.yuliantiyunita1599.workers.dev";
 var SESI = { token: baca("se_token", ""), user: baca("se_user", null) };
 
 async function panggil(path, body) {
@@ -958,3 +958,40 @@ if (halaman === "akun") renderAkun();
     }
   });
 })();
+/* ===== VIDEO VIP DARI SERVER (TAHAP 3) ===== */
+function srcVip(no) {
+  return API + "/v/" + no + "?t=" + encodeURIComponent(SESI.token || "");
+}
+
+async function muatVipServer() {
+  try {
+    const r = await fetch(API + "/api/vip/daftar");
+    const j = await r.json();
+    if (!r.ok || !Array.isArray(j.video)) return;
+    Object.keys(PETA).forEach(k => { if (PETA[k].vip) delete PETA[k]; });
+    VIP.length = 0;
+    j.video.forEach((x, i) => {
+      const v = { id: "v" + x.id, judul: x.judul || "Video VIP " + (i + 1), vip: true, thumb: x.thumb || "" };
+      Object.defineProperty(v, "src", { get: () => srcVip(x.id), enumerable: true });
+      VIP.push(v);
+      PETA[v.id] = v;
+    });
+    if (halaman === "langganan") renderLangganan();
+    if (halaman === "aktivitas") renderAktivitas();
+  } catch (e) {}
+}
+
+const ambilFrameAsli = ambilFrame;
+ambilFrame = function (box) {
+  const art = box.closest("[data-id]");
+  const v = art && PETA[art.dataset.id];
+  if (v && v.vip && !aktif()) return Promise.resolve(true);
+  return ambilFrameAsli(box);
+};
+
+pv.addEventListener("error", () => {
+  if (sedang && sedang.vip) toast("Video VIP gagal diputar. Coba keluar lalu masuk lagi.");
+});
+
+muatVipServer();
+
