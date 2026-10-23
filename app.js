@@ -930,3 +930,37 @@ function cekKembaliBayar() {
 if (SESI.token) cekBayarServer().then(() => {
   if (halaman === "langganan") renderLangganan();
 });
+/* ===== LIVE CHAT (WA & TELEGRAM) ===== */
+const KONTAK_WA = "62895410303928";
+const KONTAK_TELEGRAM = "@Anying1299";
+
+(function () {
+  const nav = $(".bottom");
+  if (!nav || $("#btn-chat")) return;
+
+  const b = document.createElement("button");
+  b.id = "btn-chat";
+  b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>Live Chat';
+  nav.insertBefore(b, nav.querySelector('[data-page="akun"]'));
+
+  const sheet = document.createElement("div");
+  sheet.id = "chat-sheet";
+  sheet.className = "chat-sheet";
+  sheet.innerHTML = `<div class="chat-box">
+    <h3>Live Chat</h3>
+    <p class="muted">Hubungi admin lewat:</p>
+    <a class="chat-opsi wa" id="chat-wa" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="chat-opsi tg" id="chat-tg" target="_blank" rel="noopener">Telegram</a>
+    <button class="btn ghost" id="chat-tutup">Tutup</button></div>`;
+  document.body.appendChild(sheet);
+
+  b.onclick = () => {
+    const u = typeof SESI !== "undefined" && SESI.user;
+    const pesan = "Halo admin Spesial Edition" + (u ? " (akun: " + u.email + ")" : "") + ", saya mau tanya: ";
+    $("#chat-wa").href = "https://wa.me/" + KONTAK_WA + "?text=" + encodeURIComponent(pesan);
+    $("#chat-tg").href = "https://t.me/" + KONTAK_TELEGRAM;
+    sheet.classList.add("buka");
+  };
+  $("#chat-tutup").onclick = () => sheet.classList.remove("buka");
+  sheet.addEventListener("click", e => { if (e.target === sheet) sheet.classList.remove("buka"); });
+})();
