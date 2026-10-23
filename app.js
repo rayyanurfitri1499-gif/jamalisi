@@ -932,7 +932,7 @@ if (SESI.token) cekBayarServer().then(() => {
 });
 /* ===== LIVE CHAT (WA & TELEGRAM) ===== */
 const KONTAK_WA = "62895410303928";
-const KONTAK_TELEGRAM = "@Anying1299";
+const KONTAK_TELEGRAM = "Anying1299";
 
 (function () {
   const nav = $(".bottom");
