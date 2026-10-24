@@ -313,13 +313,12 @@
       const lama = kunciSesi();
       setSesiAsli(t, u);
       if (lama === kunciSesi()) return;
-            if (komen.classList.contains("buka")) renderBawahKomentar();
+      if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
       if (halaman === "langganan") renderLangganan();
     };
-  }
-
-  /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
+                        }
+    /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -628,7 +627,7 @@
 
   function kartuDrama(d) {
     return '<div class="dr-kartu" data-drama="' + d.id + '"><div class="dr-pst">' + sampulHTML(d) +
-            (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
+      (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
       '<span class="dr-jml">' + d.jml_ep + " ep</span></div>" +
       '<div class="dr-nama">' + esc(d.judul) + "</div></div>";
   }
@@ -638,7 +637,7 @@
     DRAMA.forEach(d => String(d.kategori || "").split(",").map(x => x.trim()).filter(Boolean).forEach(k => { if (!kat.includes(k)) kat.push(k); }));
     if (!kat.includes(kategoriPilih)) kategoriPilih = "Semua";
     let isi = DRAMA.slice();
-    if (kategoriPilih === "Terbaru") isi.sort((a, b) => b.dibuat - a.dibuat);
+        if (kategoriPilih === "Terbaru") isi.sort((a, b) => b.dibuat - a.dibuat);
     else if (kategoriPilih === "Populer") isi.sort((a, b) => b.ditonton - a.ditonton);
     else if (kategoriPilih !== "Semua") isi = isi.filter(d => String(d.kategori || "").split(",").map(x => x.trim()).includes(kategoriPilih));
     else isi.sort((a, b) => (b.sematkan - a.sematkan) || (b.dibuat - a.dibuat));
@@ -818,6 +817,19 @@
     cariLama.addEventListener("focus", e => { e.target.blur(); bukaCari(); });
   }
 
+  /* ======================= CEGAH TEKAN LAMA (DOWNLOAD VIDEO) ======================= */
+  document.addEventListener("contextmenu", e => {
+    if (e.target.closest && e.target.closest("video, #feed, #ep-player")) e.preventDefault();
+  }, true);
+  new MutationObserver(() => {
+    document.querySelectorAll("video:not([data-aman])").forEach(v => {
+      v.setAttribute("data-aman", "1");
+      v.setAttribute("controlslist", "nodownload noplaybackrate");
+      v.setAttribute("disablepictureinpicture", "");
+      v.setAttribute("disableremoteplayback", "");
+    });
+  }).observe(document.body, { childList: true, subtree: true });
+
   /* ======================= TOMBOL KEMBALI BERTAHAP ======================= */
   let adaPenjaga = false, waktuKeluar = 0;
   function pasangPenjaga() {
@@ -943,3 +955,4 @@
   hapus();
 })();
       
+    
