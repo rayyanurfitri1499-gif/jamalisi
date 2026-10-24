@@ -145,4 +145,56 @@ body.mode-feed{overflow:hidden}
 /* ===== FEED TANPA GAMBAR SAMPUL ===== */
 .fd-slide{background-image:none!important;background:#000}
 .fd-slide::before{display:none}
-           
+
+/* ===== PEMUTAR EPISODE GESER + KOMENTAR + FOTO PROFIL ===== */
+#ep-list{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+#ep-list::-webkit-scrollbar{display:none}
+.ep-slide{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
+.ep-slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.ep-slide video.lebar{object-fit:contain}
+.ep-slide.jeda .fd-jeda{display:grid}
+#ep-player .ep-atas{z-index:5;background:none;padding:calc(10px + env(safe-area-inset-top)) 10px 10px;pointer-events:none}
+#ep-player .ep-atas button{pointer-events:auto;text-shadow:0 1px 4px #000}
+#ep-player .ep-atas div{display:none}
+.ep-bawah2{padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.ep-bawah2 .fd-judul{margin-right:70px}
+.ep-garis{opacity:.5;font-weight:400}
+.ep-sinop{-webkit-line-clamp:1;margin-bottom:0}
+.ep-sinop.buka{-webkit-line-clamp:unset;display:block}
+.ep-bawah2 .fd-muat{position:relative;height:2px;margin:10px 0 0}
+.ep-total{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;padding:10px 0 2px;border-top:1px solid rgba(255,255,255,.15);font-size:14px;font-weight:700;color:#fff;text-align:left}
+.ep-total svg{width:20px;height:20px;fill:#fff;flex:none}
+.ep-total b{margin-left:auto;font-size:18px}
+.ep-kunci{position:absolute;inset:-30px;background:#1e1530 center/cover no-repeat;filter:blur(18px) brightness(.4)}
+.ep-kunci-isi{position:absolute;left:24px;right:80px;top:50%;transform:translateY(-60%);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.ep-kunci-isi b{font-size:17px}
+.ep-kunci-isi span{font-size:13px;color:#d8d0ee}
+.ep-kunci-isi .btn{margin-top:10px}
+.ep-gembok{width:60px;height:60px;border-radius:50%;background:var(--gold);display:grid;place-items:center;margin-bottom:6px}
+.ep-gembok svg{width:28px;height:28px;fill:#2a1700}
+.dl-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+.dl-grid .ep-btn{height:40px;font-size:13px}
+#eplist-sheet .sh-head small{display:block;font-size:12px;margin-top:2px}
+.fd-sisi button span{display:block}
+.km-isi{height:72vh;display:flex;flex-direction:column;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+#km-list{flex:1;overflow-y:auto;margin:12px 0;padding-right:4px}
+.km-baris{display:flex;gap:10px;margin-bottom:16px}
+.km-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none;display:grid;place-items:center;font-weight:800;color:#fff;font-size:15px;background:#2b2149}
+.km-teks{min-width:0;flex:1}
+.km-nama{font-size:12px;color:#c9c0e3}
+.km-vip{color:var(--gold);font-weight:700}
+.km-semat{color:#5be08c;font-size:11px}
+.km-isi-teks{font-size:14px;margin-top:2px;word-wrap:break-word;line-height:1.45}
+.km-info{font-size:11px;color:var(--redup);margin-top:4px}
+.km-info button{font-size:11px;color:#ff7b95}
+.km-kosong{text-align:center;color:var(--redup);padding:30px 10px;font-size:14px}
+.km-form{display:flex;gap:8px;align-items:center}
+.km-form input{flex:1;min-width:0;padding:11px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--teks);outline:none;font:inherit;font-size:14px}
+.km-form input:focus{border-color:var(--gold)}
+.km-kirim{color:var(--gold);font-weight:800;padding:8px 4px}
+.km-login{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:var(--redup)}
+.km-login a{color:var(--gold);font-size:13px}
+.akun-foto{position:relative;width:84px;height:84px;margin:0 auto 10px}
+.akun-av{width:84px;height:84px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:34px;font-weight:900;color:#fff}
+.akun-ganti{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:15px;cursor:pointer;border:2px solid var(--card)}
+             
