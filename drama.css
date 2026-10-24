@@ -130,6 +130,7 @@ body.mode-feed{overflow:hidden}
 .lanjut-list{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .lanjut-list::-webkit-scrollbar{display:none}
 .lanjut-list .dr-kartu{width:96px;flex:none}
+
 /* ===== NOTIF INSTALL APLIKASI (VERSI BARU) ===== */
 #install-bar{display:none!important}
 #pasang-app{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 8px 10px 10px;background:var(--card);border:1px solid var(--gold);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.55);transform:translateY(-160%);transition:transform .35s;max-width:520px;margin:0 auto}
@@ -141,5 +142,7 @@ body.mode-feed{overflow:hidden}
 .pa-btn{padding:9px 16px;border-radius:99px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700;flex:none}
 .pa-x{width:32px;height:32px;border-radius:50%;color:var(--redup);font-size:14px;flex:none}
 #akun-pasang{margin-top:10px}
-/* ===== LEWATI GAMBAR DI AWAL VIDEO ===== */
-video.lewati-tunggu{opacity:0}
+/* ===== FEED TANPA GAMBAR SAMPUL ===== */
+.fd-slide{background-image:none!important;background:#000}
+.fd-slide::before{display:none}
+           
