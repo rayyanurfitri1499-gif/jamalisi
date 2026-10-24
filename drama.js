@@ -676,7 +676,7 @@
 })();
 /* ===== LEWATI GAMBAR DI AWAL VIDEO ===== */
 (function () {
-  const LEWATI_DETIK = 2;
+  const LEWATI_DETIK = 200;
   const kena = v => v instanceof HTMLVideoElement && !!v.closest("#feed, #ep-player");
   document.addEventListener("loadstart", e => {
     const v = e.target;
