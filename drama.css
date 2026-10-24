@@ -141,14 +141,5 @@ body.mode-feed{overflow:hidden}
 .pa-btn{padding:9px 16px;border-radius:99px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700;flex:none}
 .pa-x{width:32px;height:32px;border-radius:50%;color:var(--redup);font-size:14px;flex:none}
 #akun-pasang{margin-top:10px}
-/* ===== KATALOG GAYA TIKTOK ===== */
-.dr-grid{gap:2px;margin:0 -12px}
-.dr-grid .dr-pst{border-radius:0;aspect-ratio:3/4}
-.dr-grid .dr-pst img{object-fit:cover;object-position:center top}
-.dr-grid .dr-nama{display:none}
-.dr-grid .dr-jml{left:6px;bottom:6px;background:none;padding:0;font-size:13px;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.9)}
-.dr-grid .dr-jml::before{content:"▷ "}
-.dr-grid .dr-gembok{top:6px;right:6px}
-/* ===== FEED TANPA GAMBAR SAMPUL ===== */
-.fd-slide{background-image:none!important;background:#000}
-.fd-slide::before{display:none}
+/* ===== LEWATI GAMBAR DI AWAL VIDEO ===== */
+video.lewati-tunggu{opacity:0}
