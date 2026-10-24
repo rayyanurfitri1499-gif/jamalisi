@@ -674,3 +674,11 @@
     if (halaman === "akun") renderAkun();
   }
 })();
+/* ===== FEED TANPA GAMBAR SAMPUL ===== */
+(function () {
+  const list = document.getElementById("fd-list");
+  if (!list) return;
+  const hapus = () => list.querySelectorAll("video[poster]").forEach(v => v.removeAttribute("poster"));
+  new MutationObserver(hapus).observe(list, { childList: true });
+  hapus();
+})();
