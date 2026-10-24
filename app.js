@@ -575,7 +575,7 @@ function ambilFrame(box) {
   });
   }
 /* ===== SERVER AKUN ===== */
-const API = "https://api.vjjdeyyjinerila.xyz";
+const API = "https://vjjdeyyjinerila.xyz";
 var SESI = { token: baca("se_token", ""), user: baca("se_user", null) };
 
 async function panggil(path, body) {
