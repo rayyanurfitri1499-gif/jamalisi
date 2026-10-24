@@ -11,7 +11,8 @@
     cari: '<svg class="ik" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>',
     gembok: '<svg viewBox="0 0 24 24"><path d="M6 10V8a6 6 0 1 1 12 0v2h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1zm2 0h8V8a4 4 0 1 0-8 0v2z"/></svg>',
     daftar: '<svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>',
-    play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'
+    play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+    komen: '<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.4 1.2 4.6 3.1 6.1L4 22l4.6-2.5c1.1.3 2.2.5 3.4.5 5.5 0 10-3.8 10-8.5S17.5 3 12 3zM7.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>'
   };
 
   let DRAMA = [];
@@ -132,6 +133,7 @@
       (suara ? "" : '<div class="fd-suara">🔇 Ketuk untuk suara</div>') +
       '<div class="fd-sisi">' +
       '<button tabindex="-1">' + IK.mata + fmt(d.ditonton) + "</button>" +
+      '<button data-komen="' + d.id + '">' + IK.komen + '<span data-jkom="' + d.id + '">' + fmt(d.jml_komentar || 0) + "</span></button>" +
       '<button data-fav-drama="' + d.id + '" class="' + (fav.includes(d.id) ? "on" : "") + '">' + IK.bintang + "Favorit</button>" +
       '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button></div>" +
       '<div class="fd-bawah"><div class="fd-judul">' + esc(d.judul) + "</div>" +
@@ -205,6 +207,8 @@
       else bukaSheet(d, tuju - 1, tuju);
       return;
     }
+    const km = e.target.closest("[data-komen]");
+    if (km) { bukaKomentar(cariDrama(km.dataset.komen)); return; }
     const fav = e.target.closest("[data-fav-drama]");
     if (fav) { toggleFav(cariDrama(fav.dataset.favDrama)); return; }
     const bg = e.target.closest("[data-bagi]");
@@ -309,22 +313,23 @@
       const lama = kunciSesi();
       setSesiAsli(t, u);
       if (lama === kunciSesi()) return;
+      if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
       if (halaman === "langganan") renderLangganan();
     };
   }
 
-     /* ======================= PEMUTAR EPISODE ======================= */
+    /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
-    '<video id="ep-video" playsinline></video><div class="fd-jeda">' + IK.play + "</div>" +
     '<div class="ep-atas"><button id="ep-tutup" aria-label="Kembali">←</button><div><b id="ep-judul"></b><small id="ep-no"></small></div></div>' +
-    '<div class="ep-bawah"><button id="ep-prev">‹ Sebelumnya</button><button id="ep-list">Daftar episode</button><button class="utama" id="ep-next">Berikutnya ›</button></div>' +
-    '<div class="ep-bar"><i></i></div>';
+    '<div id="ep-list"></div>';
   document.body.appendChild(pemutar);
-  const ev = $("#ep-video");
-  let putarD = null, putarNo = 1;
+  const epList = $("#ep-list");
+  let putarD = null, putarNo = 1, epSlides = [], epAktif = -1, lanjutOtomatis = false;
+  const videoPemutar = () => epSlides.map(s => s.querySelector("video")).filter(Boolean);
+  function jedaPemutar() { videoPemutar().forEach(v => v.pause()); }
 
   async function ambilEps(d) {
     if (EPS[d.id]) return EPS[d.id];
@@ -336,76 +341,263 @@
     return j.eps;
   }
 
-  async function bukaEpisode(d, no) {
-    if (!bolehEp(d, no)) {
-      if (pemutar.classList.contains("buka")) tutupPemutar();
-      bukaSheet(d, 0, no);
-      return;
+  const epIO = new IntersectionObserver(es => {
+    es.forEach(en => { if (en.isIntersecting && en.intersectionRatio >= 0.6) aktifkanEp(Number(en.target.dataset.no)); });
+  }, { root: epList, threshold: [0.6] });
+
+  function bangunEpisode(d, eps) {
+    epIO.disconnect();
+    videoPemutar().forEach(lepasVideo);
+    epAktif = -1;
+    const fav = favDrama().includes(d.id);
+    epList.innerHTML = eps.map(e => {
+      const kunci = !bolehEp(d, e.no);
+      return '<div class="ep-slide' + (kunci ? " terkunci" : "") + '" data-no="' + e.no + '" data-ep="' + e.id + '">' +
+        (kunci
+          ? '<div class="ep-kunci"' + (d.sampul ? ' style="background-image:url(\'' + esc(d.sampul) + '\')"' : "") + '></div>' +
+            '<div class="ep-kunci-isi"><div class="ep-gembok">' + IK.gembok + '</div><b>Episode ' + e.no + ' khusus VIP</b>' +
+            '<span>Langganan untuk lanjut nonton semua episode</span><button class="btn" data-buka="' + e.no + '">Buka semua episode</button></div>'
+          : '<video playsinline preload="none"></video><div class="fd-jeda">' + IK.play + "</div>") +
+        '<div class="fd-sisi">' +
+        '<button data-komen="' + d.id + '">' + IK.komen + '<span data-jkom="' + d.id + '">' + fmt(d.jml_komentar || 0) + "</span></button>" +
+        '<button data-fav-drama="' + d.id + '" class="' + (fav ? "on" : "") + '">' + IK.bintang + "Favorit</button>" +
+        '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button></div>" +
+        '<div class="fd-bawah ep-bawah2"><div class="fd-judul">Ep.' + e.no + ' <span class="ep-garis">|</span> ' + esc(d.judul) + "</div>" +
+        (d.sinopsis ? '<div class="fd-ket ep-sinop" data-sinop>' + esc(d.sinopsis) + "</div>" : "") +
+        '<div class="fd-muat"><i></i></div>' +
+        '<button class="ep-total" data-eplist="' + d.id + '">' + IK.daftar + "<span>Total " + d.jml_ep + " episode</span><b>›</b></button></div></div>";
+    }).join("");
+    epSlides = $$(".ep-slide", epList);
+    epSlides.forEach(s => {
+      const v = s.querySelector("video");
+      if (v) {
+        v.addEventListener("loadedmetadata", () => v.classList.toggle("lebar", v.videoWidth > v.videoHeight));
+        v.addEventListener("timeupdate", () => { if (v.duration) s.querySelector(".fd-muat i").style.width = (v.currentTime / v.duration * 100) + "%"; });
+        v.addEventListener("ended", () => keEpisode(Number(s.dataset.no) + 1, true));
+        v.addEventListener("error", () => { if (v.getAttribute("src") && pemutar.classList.contains("buka")) toast("Video gagal diputar. Coba lagi sebentar."); });
+      }
+      epIO.observe(s);
+    });
+  }
+
+  function keEpisode(no, otomatis) {
+    const s = epSlides.find(x => Number(x.dataset.no) === no);
+    if (!s) return;
+    lanjutOtomatis = !!otomatis;
+    epList.scrollTo({ top: s.offsetTop, behavior: otomatis ? "smooth" : "auto" });
+  }
+
+  function aktifkanEp(no) {
+    if (no === epAktif || !putarD) return;
+    epAktif = no;
+    putarNo = no;
+    const d = putarD;
+    $("#ep-no").textContent = "Ep " + no + " dari " + d.jml_ep;
+    epSlides.forEach(s => {
+      const n = Number(s.dataset.no), v = s.querySelector("video");
+      if (!v) return;
+      if (n === no) {
+        if (!v.getAttribute("src")) { v.preload = "auto"; v.src = srcEp(s.dataset.ep); }
+        s.classList.remove("jeda");
+        v.muted = false;
+        if (pemutar.classList.contains("buka") && !document.hidden) v.play().catch(() => {});
+      } else if (n === no + 1) {
+        if (!v.getAttribute("src")) { v.preload = "metadata"; v.src = srcEp(s.dataset.ep); }
+        v.pause();
+      } else lepasVideo(v);
+    });
+    const s = epSlides.find(x => Number(x.dataset.no) === no);
+    if (s && s.classList.contains("terkunci")) {
+      if (lanjutOtomatis) bukaSheet(d, no - 1, no);
+    } else {
+      const pr = progres();
+      pr[d.id] = no;
+      simpan("se_progres", pr);
+      simpan("se_progres_waktu", Object.assign(sk("se_progres_waktu", {}), { [d.id]: Date.now() }));
+      hitungTonton(d);
     }
+    lanjutOtomatis = false;
+  }
+
+  async function bukaEpisode(d, no) {
     let eps;
     try { eps = await ambilEps(d); } catch (e) { toast(e.message); return; }
-    const ep = eps.find(x => x.no === no);
-    if (!ep) { toast("Episode belum tersedia"); return; }
+    if (!eps.find(x => x.no === no)) { toast("Episode belum tersedia"); return; }
+    if (!bolehEp(d, no) && !pemutar.classList.contains("buka")) { bukaSheet(d, 0, no); return; }
     if (!bolehVip()) iklanMungkin();
-    putarD = d; putarNo = no;
     jedaFeed();
-    $("#ep-judul").textContent = d.judul;
-    $("#ep-no").textContent = "Ep " + no + " dari " + d.jml_ep;
-    $("#ep-prev").disabled = no <= 1;
-    $("#ep-next").textContent = no >= d.jml_ep ? "Selesai" : "Berikutnya ›";
-    pemutar.classList.remove("jeda");
-    pemutar.classList.add("buka");
-    ev.src = srcEp(ep.id);
-    ev.muted = false;
     suara = true;
-    ev.play().catch(() => {});
-    const pr = progres();
-    pr[d.id] = no;
-    simpan("se_progres", pr);
-    simpan("se_progres_waktu", Object.assign(sk("se_progres_waktu", {}), { [d.id]: Date.now() }));
-    hitungTonton(d);
+    $("#ep-judul").textContent = d.judul;
+    if (putarD !== d || epSlides.length !== eps.length || pemutar.dataset.vip !== String(bolehVip())) {
+      putarD = d;
+      pemutar.dataset.vip = String(bolehVip());
+      bangunEpisode(d, eps);
+    }
+    pemutar.classList.add("buka");
+    epAktif = -1;
+    requestAnimationFrame(() => { keEpisode(no, false); aktifkanEp(no); });
   }
 
   function tutupPemutar() {
-    ev.pause(); ev.removeAttribute("src"); ev.load();
+    videoPemutar().forEach(lepasVideo);
+    epAktif = -1;
     pemutar.classList.remove("buka");
     if (halaman === "langganan" && putarD) renderLangganan();
     if (halaman === "aktivitas") renderAktivitas();
     lanjutFeed();
   }
 
-  ev.addEventListener("timeupdate", () => {
-    if (ev.duration) $(".ep-bar i", pemutar).style.width = (ev.currentTime / ev.duration * 100) + "%";
-  });
-  ev.addEventListener("ended", () => {
-    if (!putarD || putarNo >= putarD.jml_ep) return;
-    const d = putarD, no = putarNo;
-    if (bolehEp(d, no + 1)) bukaEpisode(d, no + 1);
-    else { tutupPemutar(); bukaSheet(d, no, no + 1); }
-  });
-  ev.addEventListener("error", () => {
-    if (!pemutar.classList.contains("buka") || !ev.getAttribute("src")) return;
-    if (putarD && !bolehEp(putarD, putarNo)) { const d = putarD, no = putarNo; tutupPemutar(); bukaSheet(d, 0, no); }
-    else toast("Video gagal diputar. Coba lagi sebentar.");
-  });
-  ev.addEventListener("click", () => {
-    if (ev.paused) { pemutar.classList.remove("jeda"); ev.play().catch(() => {}); }
-    else { pemutar.classList.add("jeda"); ev.pause(); }
+  epList.addEventListener("click", e => {
+    const buka = e.target.closest("[data-buka]");
+    if (buka) { const no = Number(buka.dataset.buka); bukaSheet(putarD, no - 1, no); return; }
+    const km = e.target.closest("[data-komen]");
+    if (km) { bukaKomentar(cariDrama(km.dataset.komen) || putarD); return; }
+    const fav = e.target.closest("[data-fav-drama]");
+    if (fav) { toggleFav(putarD); return; }
+    const bg = e.target.closest("[data-bagi]");
+    if (bg) { bagikan(putarD); return; }
+    if (e.target.closest("[data-eplist]")) { bukaDaftarEp(putarD); return; }
+    const sp = e.target.closest("[data-sinop]");
+    if (sp) { sp.classList.toggle("buka"); return; }
+    const s = e.target.closest(".ep-slide");
+    if (!s || e.target.closest(".fd-sisi")) return;
+    const v = s.querySelector("video");
+    if (!v) return;
+    if (v.paused) { s.classList.remove("jeda"); v.play().catch(() => {}); }
+    else { s.classList.add("jeda"); v.pause(); }
   });
   $("#ep-tutup").onclick = tutupPemutar;
-  $("#ep-prev").onclick = () => putarD && putarNo > 1 && bukaEpisode(putarD, putarNo - 1);
-  $("#ep-next").onclick = () => {
-    if (!putarD) return;
-    if (putarNo >= putarD.jml_ep) { tutupPemutar(); return; }
-    bukaEpisode(putarD, putarNo + 1);
-  };
-  $("#ep-list").onclick = () => {
-    const d = putarD;
-    tutupPemutar();
-    bukaDetail(d.id);
-  };
 
-  /* ======================= KATALOG VIP & DETAIL ======================= */
+  /* ======================= DAFTAR EPISODE (LEMBAR BAWAH) ======================= */
+  const daftarEp = document.createElement("div");
+  daftarEp.id = "eplist-sheet";
+  daftarEp.className = "sheet";
+  document.body.appendChild(daftarEp);
+  let dlD = null, dlHal = 0;
+  const DL_PER = 30;
+  async function bukaDaftarEp(d) {
+    if (!d) return;
+    let eps;
+    try { eps = await ambilEps(d); } catch (e) { toast(e.message); return; }
+    dlD = d;
+    const kini = pemutar.classList.contains("buka") && putarD === d ? epAktif : (progres()[d.id] || 0);
+    dlHal = kini ? Math.floor((kini - 1) / DL_PER) : 0;
+    renderDaftarEp(eps, kini);
+    daftarEp.classList.add("buka");
+  }
+  function renderDaftarEp(eps, kini) {
+    const d = dlD, vip = bolehVip(), jmlHal = Math.ceil(eps.length / DL_PER);
+    daftarEp.innerHTML = '<div class="sheet-isi"><div class="sh-head"><div><h3>' + esc(d.judul) + '</h3><small class="muted">Total ' + eps.length +
+      " episode" + (vip ? "" : " · " + Math.min(d.gratis, eps.length) + " gratis") + '</small></div><button class="sh-x" aria-label="Tutup">✕</button></div>' +
+      (jmlHal > 1 ? '<div class="chips">' + Array.from({ length: jmlHal }, (_, i) => '<button class="' + (i === dlHal ? "on" : "") + '" data-dlhal="' + i + '">' +
+        (i * DL_PER + 1) + "-" + Math.min((i + 1) * DL_PER, eps.length) + "</button>").join("") + "</div>" : '<div style="height:12px"></div>') +
+      '<div class="ep-grid dl-grid">' + eps.slice(dlHal * DL_PER, (dlHal + 1) * DL_PER).map(e => {
+        const gratis = e.no <= d.gratis, kunci = !gratis && !vip;
+        const kelas = e.no === kini ? "terakhir" : gratis ? "gratis" : kunci ? "kunci" : "";
+        return '<button class="ep-btn ' + kelas + '" data-dlep="' + e.no + '">' + e.no + (kunci ? IK.gembok : "") + "</button>";
+      }).join("") + "</div></div>";
+    $(".sh-x", daftarEp).onclick = () => daftarEp.classList.remove("buka");
+    $$("[data-dlhal]", daftarEp).forEach(b => b.onclick = () => { dlHal = Number(b.dataset.dlhal); renderDaftarEp(eps, kini); });
+    $$("[data-dlep]", daftarEp).forEach(b => b.onclick = () => {
+      const no = Number(b.dataset.dlep);
+      daftarEp.classList.remove("buka");
+      if (pemutar.classList.contains("buka") && putarD === d) keEpisode(no, false);
+      else bukaEpisode(d, no);
+    });
+  }
+  daftarEp.addEventListener("click", e => { if (e.target === daftarEp) daftarEp.classList.remove("buka"); });
+
+  /* ======================= KOMENTAR ======================= */
+  const komen = document.createElement("div");
+  komen.id = "komen-sheet";
+  komen.className = "sheet";
+  komen.innerHTML =
+    '<div class="sheet-isi km-isi"><div class="sh-head"><h3 id="km-judul">Komentar</h3><button class="sh-x" id="km-x" aria-label="Tutup">✕</button></div>' +
+    '<div id="km-list"></div><div id="km-bawah"></div></div>';
+  document.body.appendChild(komen);
+  let komenD = null;
+
+  const waktuLalu = t => {
+    const s = (Date.now() - t) / 1000;
+    if (s < 60) return "baru saja";
+    if (s < 3600) return Math.floor(s / 60) + " menit lalu";
+    if (s < 86400) return Math.floor(s / 3600) + " jam lalu";
+    if (s < 604800) return Math.floor(s / 86400) + " hari lalu";
+    return tgl(t);
+  };
+  function avatarHTML(nama, foto, kelas) {
+    if (foto) return '<img class="' + kelas + '" src="' + esc(foto) + '" alt="" referrerpolicy="no-referrer" loading="lazy">';
+    const h = String(nama || "?").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+    return '<span class="' + kelas + ' km-inisial" style="background:hsl(' + h + ',55%,42%)">' + esc(String(nama || "?").trim().charAt(0).toUpperCase() || "?") + "</span>";
+  }
+  function barisKomentar(k) {
+    return '<div class="km-baris" data-kid="' + k.id + '">' + avatarHTML(k.nama, k.foto, "km-av") +
+      '<div class="km-teks"><div class="km-nama">' + esc(k.nama) + (k.vip ? ' <span class="km-vip">👑 VIP</span>' : "") +
+      (k.sematkan ? ' <span class="km-semat">📌 Disematkan</span>' : "") + "</div>" +
+      '<div class="km-isi-teks">' + esc(k.isi) + "</div>" +
+      '<div class="km-info">' + waktuLalu(k.dibuat) + (k.milik ? ' · <button data-hapus-km="' + k.id + '">Hapus</button>' : "") + "</div></div></div>";
+  }
+  function setJumlah(d, n) {
+    d.jml_komentar = n;
+    $$('[data-jkom="' + d.id + '"]').forEach(x => x.textContent = fmt(n));
+    $("#km-judul").textContent = fmt(n) + " komentar";
+  }
+  function renderBawahKomentar() {
+    const b = $("#km-bawah");
+    if (!SESI.user) {
+      b.innerHTML = '<div class="km-login"><span>Masuk untuk ikut berkomentar</span><div id="km-gbtn"></div><a href="#" id="km-email">Masuk atau daftar pakai email</a></div>';
+      $("#km-email").onclick = e => { e.preventDefault(); komen.classList.remove("buka"); pindah("akun"); };
+      if (typeof muatGoogle === "function") muatGoogle().then(() => {
+        const g = $("#km-gbtn");
+        if (g && g.isConnected) google.accounts.id.renderButton(g, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", width: 280 });
+      }).catch(() => {});
+      return;
+    }
+    b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
+      '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
+    $("#km-form").onsubmit = async e => {
+      e.preventDefault();
+      const inp = $("#km-input"), isi = inp.value.trim();
+      if (!isi || !komenD) return;
+      const tb = $(".km-kirim"); tb.disabled = true;
+      try {
+        const j = await panggil("/api/komentar", { drama: komenD.id, isi });
+        inp.value = "";
+        const lst = $("#km-list");
+        const kosong = $(".km-kosong", lst); if (kosong) kosong.remove();
+        lst.insertAdjacentHTML("afterbegin", barisKomentar(j.komentar));
+        setJumlah(komenD, (komenD.jml_komentar || 0) + 1);
+      } catch (err) { toast(err.message); }
+      tb.disabled = false;
+    };
+  }
+  async function bukaKomentar(d) {
+    if (!d) return;
+    komenD = d;
+    $("#km-judul").textContent = fmt(d.jml_komentar || 0) + " komentar";
+    $("#km-list").innerHTML = '<p class="km-kosong">Memuat komentar...</p>';
+    renderBawahKomentar();
+    komen.classList.add("buka");
+    try {
+      const j = await panggil("/api/komentar?drama=" + d.id);
+      if (komenD !== d) return;
+      $("#km-list").innerHTML = j.komentar.length ? j.komentar.map(barisKomentar).join("") : '<p class="km-kosong">Belum ada komentar. Jadi yang pertama!</p>';
+      setJumlah(d, j.total);
+    } catch (e) { $("#km-list").innerHTML = '<p class="km-kosong">' + esc(e.message) + "</p>"; }
+  }
+  $("#km-x").onclick = () => komen.classList.remove("buka");
+  komen.addEventListener("click", async e => {
+    if (e.target === komen) { komen.classList.remove("buka"); return; }
+    const h = e.target.closest("[data-hapus-km]");
+    if (!h || !confirm("Hapus komentar ini?")) return;
+    try {
+      await panggil("/api/komentar/hapus", { id: Number(h.dataset.hapusKm) });
+      const row = h.closest(".km-baris"); if (row) row.remove();
+      setJumlah(komenD, Math.max(0, (komenD.jml_komentar || 1) - 1));
+    } catch (err) { toast(err.message); }
+  });
+
+    /* ======================= KATALOG VIP & DETAIL ======================= */
   let detailId = 0, kategoriPilih = "Semua", halEp = 0;
 
   function bukaDetail(id) {
@@ -509,7 +701,7 @@
     const kd = e.target.closest("[data-drama]");
     if (kd && !e.target.closest("#feed")) { bukaDetail(kd.dataset.drama); window.scrollTo({ top: 0 }); return; }
     const fv = e.target.closest("[data-fav-drama]");
-    if (fv && !e.target.closest("#feed")) { toggleFav(cariDrama(fv.dataset.favDrama)); return; }
+    if (fv && !e.target.closest("#feed") && !e.target.closest("#ep-player")) { toggleFav(cariDrama(fv.dataset.favDrama)); return; }
     if (e.target.closest("[data-perpanjang]")) bukaSheet(null);
   });
 
@@ -562,6 +754,44 @@
     el.insertBefore(blok, el.firstChild);
   };
 
+  /* ======================= FOTO PROFIL DI AKUN ======================= */
+  function kecilkanFoto(file) {
+    return new Promise((ok, gagal) => {
+      const img = new Image();
+      img.onload = () => {
+        const S = 160, c = document.createElement("canvas");
+        c.width = S; c.height = S;
+        const m = Math.min(img.width, img.height);
+        c.getContext("2d").drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, S, S);
+        URL.revokeObjectURL(img.src);
+        ok(c.toDataURL("image/jpeg", 0.82));
+      };
+      img.onerror = () => gagal(new Error("Gambar tidak bisa dibaca"));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  const renderAkunFoto = renderAkun;
+  renderAkun = function () {
+    renderAkunFoto();
+    const u = SESI.user, av = $("#page-akun .avatar");
+    if (!u || !av) return;
+    av.outerHTML = '<div class="akun-foto">' + avatarHTML(u.nama, u.foto, "akun-av") +
+      '<label class="akun-ganti">📷<input type="file" accept="image/*" id="akun-file" hidden></label></div>';
+    $("#akun-file").onchange = async e => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      try {
+        toast("Mengunggah foto...");
+        const data = await kecilkanFoto(f);
+        const j = await panggil("/api/foto", { foto: data });
+        setSesi(SESI.token, j.user);
+        toast("Foto profil diperbarui");
+        renderAkun();
+      } catch (err) { toast(err.message); }
+    };
+  };
+  if (halaman === "akun") renderAkun();
+
   /* ======================= NAVIGASI ======================= */
   function aturMode() {
     const home = halaman === "home";
@@ -570,7 +800,9 @@
   }
   const pindahAsli = pindah;
   pindah = function (n) {
-    if (pemutar.classList.contains("buka")) { ev.pause(); ev.removeAttribute("src"); ev.load(); pemutar.classList.remove("buka"); }
+    if (pemutar.classList.contains("buka")) { videoPemutar().forEach(lepasVideo); epAktif = -1; pemutar.classList.remove("buka"); }
+    komen.classList.remove("buka");
+    daftarEp.classList.remove("buka");
     sheet.classList.remove("buka");
     cari.classList.remove("buka");
     pindahAsli(n);
@@ -578,7 +810,7 @@
   };
   const navVip = $('.bottom button[data-page="langganan"]');
   if (navVip) navVip.addEventListener("click", () => { detailId = 0; }, true);
-  document.addEventListener("visibilitychange", () => { if (document.hidden) { jedaFeed(); ev.pause(); } else lanjutFeed(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) { jedaFeed(); jedaPemutar(); } else if (pemutar.classList.contains("buka")) { const s = epSlides.find(x => Number(x.dataset.no) === epAktif); const v = s && s.querySelector("video"); if (v && !s.classList.contains("jeda")) v.play().catch(() => {}); } else lanjutFeed(); });
 
   const cariLama = $("#cari");
   if (cariLama) {
@@ -684,5 +916,6 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-                                     
+      
+  
     
