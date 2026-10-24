@@ -313,7 +313,8 @@
       if (halaman === "langganan") renderLangganan();
     };
   }
-  /* ======================= PEMUTAR EPISODE ======================= */
+
+      /* ======================= PEMUTAR EPISODE ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -613,6 +614,7 @@
   aturMode();
   muatDrama();
 })();
+
 /* ===== NOTIF INSTALL APLIKASI (VERSI BARU) ===== */
 (function () {
   const ua = navigator.userAgent;
@@ -674,21 +676,12 @@
     if (halaman === "akun") renderAkun();
   }
 })();
-/* ===== LEWATI GAMBAR DI AWAL VIDEO ===== */
+/* ===== FEED TANPA GAMBAR SAMPUL ===== */
 (function () {
-  const LEWATI_DETIK = 200;
-  const kena = v => v instanceof HTMLVideoElement && !!v.closest("#feed, #ep-player");
-  document.addEventListener("loadstart", e => {
-    const v = e.target;
-    if (kena(v) && v.getAttribute("src")) v.classList.add("lewati-tunggu");
-  }, true);
-  document.addEventListener("loadedmetadata", e => {
-    const v = e.target;
-    if (!kena(v)) return;
-    if (v.duration > LEWATI_DETIK + 1 && v.currentTime < LEWATI_DETIK) v.currentTime = LEWATI_DETIK;
-    else v.classList.remove("lewati-tunggu");
-  }, true);
-  ["seeked", "playing", "error"].forEach(n => document.addEventListener(n, e => {
-    if (kena(e.target)) e.target.classList.remove("lewati-tunggu");
-  }, true));
+  const list = document.getElementById("fd-list");
+  if (!list) return;
+  const hapus = () => list.querySelectorAll("video[poster]").forEach(v => v.removeAttribute("poster"));
+  new MutationObserver(hapus).observe(list, { childList: true });
+  hapus();
 })();
+        
