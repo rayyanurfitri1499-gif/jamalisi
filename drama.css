@@ -97,7 +97,6 @@ body.mode-feed{overflow:hidden}
 .ep-btn.kunci{color:var(--redup)}
 .ep-btn.kunci svg{width:11px;height:11px;fill:var(--redup)}
 .ep-btn.terakhir{background:var(--gold);color:#2a1700;border-color:var(--gold);font-weight:800}
-
 /* ===== PEMUTAR EPISODE ===== */
 #ep-player{position:fixed;inset:0;z-index:90;background:#000;display:none}
 #ep-player.buka{display:block}
@@ -197,4 +196,9 @@ body.mode-feed{overflow:hidden}
 .akun-foto{position:relative;width:84px;height:84px;margin:0 auto 10px}
 .akun-av{width:84px;height:84px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:34px;font-weight:900;color:#fff}
 .akun-ganti{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:15px;cursor:pointer;border:2px solid var(--card)}
-             
+
+/* ===== CEGAH TEKAN LAMA PADA VIDEO ===== */
+video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#feed,#ep-player{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+      
+         
