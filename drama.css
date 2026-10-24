@@ -141,21 +141,11 @@ body.mode-feed{overflow:hidden}
 .pa-btn{padding:9px 16px;border-radius:99px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700;flex:none}
 .pa-x{width:32px;height:32px;border-radius:50%;color:var(--redup);font-size:14px;flex:none}
 #akun-pasang{margin-top:10px}
-/* Poster drama VIP pas di kotak (rasio 3:4) */
-.vip-grid .card,
-.vip-grid .thumb,
-.drama-card,
-.drama-card .thumb {
-  height: auto !important;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-}
-
-.vip-grid img,
-.drama-card img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-  object-position: center;
-  transform: none !important;
-}
+/* ===== GAMBAR SAMPUL TAMPIL UTUH ===== */
+.dr-pst{background:#120c22}
+.dr-pst img{object-fit:contain}
+.fd-slide{background-size:cover}
+.fd-slide::before{content:"";position:absolute;inset:-30px;background:inherit;filter:blur(24px) brightness(.45);z-index:0}
+.fd-slide video{z-index:1;object-fit:contain}
+.fd-slide video.lebar{object-fit:contain}
+.fd-slide .fd-bawah,.fd-slide .fd-sisi,.fd-slide .fd-muat,.fd-slide .fd-suara,.fd-slide .fd-jeda{z-index:2}
