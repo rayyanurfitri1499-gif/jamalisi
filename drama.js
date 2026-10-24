@@ -313,13 +313,13 @@
       const lama = kunciSesi();
       setSesiAsli(t, u);
       if (lama === kunciSesi()) return;
-      if (komen.classList.contains("buka")) renderBawahKomentar();
+            if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
       if (halaman === "langganan") renderLangganan();
     };
   }
 
-    /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
+  /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -597,7 +597,7 @@
     } catch (err) { toast(err.message); }
   });
 
-    /* ======================= KATALOG VIP & DETAIL ======================= */
+  /* ======================= KATALOG VIP & DETAIL ======================= */
   let detailId = 0, kategoriPilih = "Semua", halEp = 0;
 
   function bukaDetail(id) {
@@ -628,7 +628,7 @@
 
   function kartuDrama(d) {
     return '<div class="dr-kartu" data-drama="' + d.id + '"><div class="dr-pst">' + sampulHTML(d) +
-      (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
+            (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
       '<span class="dr-jml">' + d.jml_ep + " ep</span></div>" +
       '<div class="dr-nama">' + esc(d.judul) + "</div></div>";
   }
@@ -818,6 +818,32 @@
     cariLama.addEventListener("focus", e => { e.target.blur(); bukaCari(); });
   }
 
+  /* ======================= TOMBOL KEMBALI BERTAHAP ======================= */
+  let adaPenjaga = false, waktuKeluar = 0;
+  function pasangPenjaga() {
+    if (adaPenjaga) return;
+    try { history.pushState({ se: 1 }, "", location.href); adaPenjaga = true; } catch (e) {}
+  }
+  document.addEventListener("pointerdown", pasangPenjaga, true);
+  function langkahMundur() {
+    if (komen.classList.contains("buka")) { komen.classList.remove("buka"); return true; }
+    if (daftarEp.classList.contains("buka")) { daftarEp.classList.remove("buka"); return true; }
+    if (sheet.classList.contains("buka")) { tutupSheet(); return true; }
+    if (cari.classList.contains("buka")) { cari.classList.remove("buka"); lanjutFeed(); return true; }
+    if (pemutar.classList.contains("buka")) { tutupPemutar(); return true; }
+    if (halaman === "langganan" && detailId) { detailId = 0; renderLangganan(); window.scrollTo({ top: 0 }); return true; }
+    if (halaman !== "home") { pindah("home"); return true; }
+    return false;
+  }
+  window.addEventListener("popstate", () => {
+    adaPenjaga = false;
+    if (langkahMundur()) { pasangPenjaga(); return; }
+    if (Date.now() - waktuKeluar < 2000) { history.back(); return; }
+    waktuKeluar = Date.now();
+    if (typeof toast === "function") toast("Tekan kembali sekali lagi untuk keluar");
+    pasangPenjaga();
+  });
+
   /* ======================= MULAI ======================= */
   async function muatDrama() {
     try {
@@ -917,5 +943,3 @@
   hapus();
 })();
       
-  
-    
