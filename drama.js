@@ -314,7 +314,7 @@
     };
   }
 
-      /* ======================= PEMUTAR EPISODE ======================= */
+     /* ======================= PEMUTAR EPISODE ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -684,4 +684,5 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-        
+                                     
+    
