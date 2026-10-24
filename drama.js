@@ -674,11 +674,21 @@
     if (halaman === "akun") renderAkun();
   }
 })();
-/* ===== FEED TANPA GAMBAR SAMPUL ===== */
+/* ===== LEWATI GAMBAR DI AWAL VIDEO ===== */
 (function () {
-  const list = document.getElementById("fd-list");
-  if (!list) return;
-  const hapus = () => list.querySelectorAll("video[poster]").forEach(v => v.removeAttribute("poster"));
-  new MutationObserver(hapus).observe(list, { childList: true });
-  hapus();
+  const LEWATI_DETIK = 2;
+  const kena = v => v instanceof HTMLVideoElement && !!v.closest("#feed, #ep-player");
+  document.addEventListener("loadstart", e => {
+    const v = e.target;
+    if (kena(v) && v.getAttribute("src")) v.classList.add("lewati-tunggu");
+  }, true);
+  document.addEventListener("loadedmetadata", e => {
+    const v = e.target;
+    if (!kena(v)) return;
+    if (v.duration > LEWATI_DETIK + 1 && v.currentTime < LEWATI_DETIK) v.currentTime = LEWATI_DETIK;
+    else v.classList.remove("lewati-tunggu");
+  }, true);
+  ["seeked", "playing", "error"].forEach(n => document.addEventListener(n, e => {
+    if (kena(e.target)) e.target.classList.remove("lewati-tunggu");
+  }, true));
 })();
