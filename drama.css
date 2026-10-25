@@ -215,5 +215,5 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #fd-tarik.siap i{border-color:var(--gold)}
 #fd-tarik.muat i{border-color:rgba(255,255,255,.35);border-top-color:var(--gold);animation:fdPutar .7s linear infinite}
 @keyframes fdPutar{to{transform:rotate(360deg)}}
-                           
+  
 .ep-bawah{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:24px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.75))}
