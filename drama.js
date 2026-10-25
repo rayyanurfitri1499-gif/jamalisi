@@ -226,7 +226,8 @@
     const semua = e.target.closest("[data-semua]");
     if (semua) {
       const d = cariDrama(semua.dataset.semua);
-      const tuju = Math.min(progres()[d.id] || 2, d.jml_ep);
+      const pr = progres()[d.id] || 0;
+      const tuju = pr > 1 && pr < d.jml_ep ? pr : 1;
       if (bolehEp(d, tuju)) bukaEpisode(d, tuju);
       else bukaSheet(d, tuju - 1, tuju);
       return;
@@ -353,7 +354,7 @@
     const bayar = $("#sh-bayar");
     if (bayar) bayar.onclick = async () => {
       bayar.disabled = true; bayar.textContent = "Menyiapkan pembayaran...";
-            try {
+      try {
         const j = await panggil("/api/bayar", { paket: paketSheet });
         location.href = j.url;
       } catch (err) {
@@ -367,7 +368,7 @@
     if (g && typeof muatGoogle === "function") {
       muatGoogle().then(() => {
         if (!g.isConnected) return;
-        google.accounts.id.renderButton(g, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", width: Math.min(320, (g.clientWidth || 300)) });
+                google.accounts.id.renderButton(g, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", width: Math.min(320, (g.clientWidth || 300)) });
       }).catch(() => {});
     }
   }
@@ -420,7 +421,12 @@
 
   /* drama berikutnya setelah episode terakhir */
   function pilihBerikut(d) {
-    const calon = DRAMA.filter(x => x.id !== d.id && x.gratis > 0 && x.ep1);
+    const dilewati = rantai.map(x => x.id);
+    let calon = DRAMA.filter(x => x.id !== d.id && !dilewati.includes(x.id) && x.gratis > 0 && x.ep1);
+    if (!calon.length) {
+      const sbl = rantai[posRantai - 1];
+      calon = DRAMA.filter(x => x.id !== d.id && (!sbl || x.id !== sbl.id) && x.gratis > 0 && x.ep1);
+    }
     if (!calon.length) return null;
     const lihat = dilihat();
     const belum = calon.filter(x => !lihat.includes(x.id));
@@ -708,7 +714,7 @@
       return;
     }
     b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
-            '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
+      '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
     $("#km-form").onsubmit = async e => {
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
@@ -732,7 +738,7 @@
     $("#km-list").innerHTML = '<p class="km-kosong">Memuat komentar...</p>';
     renderBawahKomentar();
     komen.classList.add("buka");
-    try {
+        try {
       const j = await panggil("/api/komentar?drama=" + d.id);
       if (komenD !== d) return;
       $("#km-list").innerHTML = j.komentar.length ? j.komentar.map(barisKomentar).join("") : '<p class="km-kosong">Belum ada komentar. Jadi yang pertama!</p>';
@@ -823,8 +829,9 @@
     halEp = Math.min(halEp, Math.max(0, jmlHal - 1));
     const vip = bolehVip();
     const terkunci = !vip && d.gratis < d.jml_ep;
-    const lanjutNo = Math.min(terakhir || 1, d.jml_ep);
-    const label = terkunci && !bolehEp(d, lanjutNo) ? "Buka semua " + d.jml_ep + " episode" : (terakhir ? "Lanjut tonton Ep " + lanjutNo : "Tonton Ep 1");
+    const belumTamat = terakhir > 1 && terakhir < d.jml_ep;
+    const lanjutNo = belumTamat ? terakhir : 1;
+    const label = terkunci && !bolehEp(d, lanjutNo) ? "Buka semua " + d.jml_ep + " episode" : (belumTamat ? "Lanjut tonton Ep " + lanjutNo : "Tonton Ep 1");
     const fav = favDrama().includes(d.id);
     el.innerHTML =
       '<button class="dt-kembali" id="dt-kembali">← Kembali</button>' +
@@ -1109,7 +1116,5 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-      
-
-      
-      
+       
+        
