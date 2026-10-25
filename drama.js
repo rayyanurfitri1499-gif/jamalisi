@@ -265,6 +265,47 @@
     renderFeed();
   });
   $(".crown", feed).onclick = () => { renderFeed(true); };
+
+  /* tarik ke bawah di video paling atas = refresh & ganti video */
+  const tarik = document.createElement("div");
+  tarik.id = "fd-tarik";
+  tarik.innerHTML = "<i></i>";
+  feed.appendChild(tarik);
+  let yAwal = null, jarak = 0, sedangMuat = false;
+  list.addEventListener("touchstart", e => {
+    yAwal = (list.scrollTop <= 0 && !sedangMuat) ? e.touches[0].clientY : null;
+    jarak = 0;
+  }, { passive: true });
+  list.addEventListener("touchmove", e => {
+    if (yAwal === null) return;
+    jarak = Math.max(0, e.touches[0].clientY - yAwal);
+    if (list.scrollTop > 0) { jarak = 0; }
+    const t = Math.min(jarak * 0.5, 90);
+    tarik.style.transition = "none";
+    tarik.style.opacity = t > 8 ? 1 : 0;
+    tarik.style.transform = "translate(-50%," + t + "px) rotate(" + (t * 4) + "deg)";
+    tarik.classList.toggle("siap", t >= 60);
+  }, { passive: true });
+  list.addEventListener("touchend", () => {
+    if (yAwal === null) return;
+    yAwal = null;
+    tarik.style.transition = "";
+    if (jarak * 0.5 >= 60) {
+      sedangMuat = true;
+      tarik.classList.add("muat");
+      tarik.style.transform = "translate(-50%,60px)";
+      Promise.resolve(muatDrama()).finally(() => {
+        sedangMuat = false;
+        tarik.classList.remove("muat", "siap");
+        tarik.style.opacity = 0;
+        tarik.style.transform = "translate(-50%,0)";
+      });
+    } else {
+      tarik.classList.remove("siap");
+      tarik.style.opacity = 0;
+      tarik.style.transform = "translate(-50%,0)";
+    }
+  }, { passive: true });
   const navHome = $('.bottom button[data-page="home"]');
   if (navHome) navHome.addEventListener("click", () => { if (DRAMA.length) renderFeed(true); });
   $("#fd-cari").onclick = () => bukaCari();
@@ -307,7 +348,7 @@
         : '<div class="sh-login"><p class="muted" style="margin-bottom:10px">Masuk dulu untuk berlangganan</p><div id="sh-gbtn"></div>' +
           '<a href="#" id="sh-email">Masuk atau daftar pakai email</a></div>') +
       "</div>";
-    $(".sh-x", sheet).onclick = tutupSheet;
+        $(".sh-x", sheet).onclick = tutupSheet;
     $$(".sh-pk", sheet).forEach(b => b.onclick = () => { paketSheet = b.dataset.pk; renderSheet(); });
     const bayar = $("#sh-bayar");
     if (bayar) bayar.onclick = async () => {
@@ -338,7 +379,7 @@
     setSesi = function (t, u) {
       const lama = kunciSesi();
       setSesiAsli(t, u);
-            if (lama === kunciSesi()) return;
+      if (lama === kunciSesi()) return;
       if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
       if (halaman === "langganan") renderLangganan();
@@ -370,7 +411,9 @@
   const epIO = new IntersectionObserver(es => {
     es.forEach(en => {
       if (!en.isIntersecting || en.intersectionRatio < 0.6) return;
+      if (Date.now() < kunciGeser) return;
       if (en.target.dataset.lanjut) { keDramaBerikut(Number(en.target.dataset.lanjut)); return; }
+      if (en.target.dataset.balik) { keDramaSebelum(); return; }
       aktifkanEp(Number(en.target.dataset.no));
     });
   }, { root: epList, threshold: [0.6] });
@@ -384,13 +427,30 @@
     const kumpulan = belum.length ? belum : calon;
     return kumpulan[Math.floor(Math.random() * kumpulan.length)];
   }
-  let pindahDrama = false;
+  /* rantai drama yang ditonton berurutan di pemutar, supaya bisa scroll balik ke drama sebelumnya */
+  let pindahDrama = false, rantai = [], posRantai = 0, kunciGeser = 0;
   function keDramaBerikut(id) {
     const n = cariDrama(id);
     if (!n || pindahDrama) return;
     pindahDrama = true;
     videoPemutar().forEach(v => v.pause());
-    bukaEpisode(n, 1).finally(() => { pindahDrama = false; });
+    const epAkhir = epSlides.filter(x => x.dataset.no).map(x => Number(x.dataset.no)).pop() || putarNo;
+    if (rantai[posRantai]) rantai[posRantai].no = epAkhir;
+    if (!rantai[posRantai + 1] || rantai[posRantai + 1].id !== n.id) {
+      rantai = rantai.slice(0, posRantai + 1);
+      rantai.push({ id: n.id, no: 1 });
+    }
+    posRantai++;
+    bukaEpisode(n, rantai[posRantai].no, true).finally(() => { pindahDrama = false; });
+  }
+  function keDramaSebelum() {
+    const sbl = rantai[posRantai - 1], n = sbl && cariDrama(sbl.id);
+    if (!n || pindahDrama) return;
+    pindahDrama = true;
+    videoPemutar().forEach(v => v.pause());
+    rantai[posRantai].no = putarNo;
+    posRantai--;
+    bukaEpisode(n, sbl.no, true).finally(() => { pindahDrama = false; });
   }
 
   function bangunEpisode(d, eps) {
@@ -398,7 +458,11 @@
     videoPemutar().forEach(lepasVideo);
     epAktif = -1;
     const fav = favDrama().includes(d.id);
-    epList.innerHTML = eps.map(e => {
+    const sbl = posRantai > 0 && rantai[posRantai - 1] ? cariDrama(rantai[posRantai - 1].id) : null;
+    epList.innerHTML = (sbl
+      ? '<div class="ep-slide ep-lanjut ep-balik" data-balik="' + sbl.id + '"' + (sbl.sampul ? ' style="background-image:url(\'' + esc(sbl.sampul) + '\')"' : "") + '>' +
+        '<div class="ep-lanjut-isi"><small>Drama sebelumnya</small><b>' + esc(sbl.judul) + '</b><span>Kembali ke Ep ' + rantai[posRantai - 1].no + '...</span></div></div>'
+      : "") + eps.map(e => {
       const kunci = !bolehEp(d, e.no);
       return '<div class="ep-slide' + (kunci ? " terkunci" : "") + '" data-no="' + e.no + '" data-ep="' + e.id + '">' +
         (kunci
@@ -415,10 +479,11 @@
         '<div class="fd-muat"><i></i></div>' +
         '<button class="ep-total" data-eplist="' + d.id + '">' + IK.daftar + "<span>Total " + d.jml_ep + " episode</span><b>›</b></button></div></div>";
     }).join("") + (function () {
-      const n = pilihBerikut(d);
+      const brk = rantai[posRantai + 1];
+      const n = (brk && cariDrama(brk.id)) || pilihBerikut(d);
       if (!n) return "";
       return '<div class="ep-slide ep-lanjut" data-lanjut="' + n.id + '"' + (n.sampul ? ' style="background-image:url(\'' + esc(n.sampul) + '\')"' : "") + '>' +
-        '<div class="ep-lanjut-isi"><small>Drama berikutnya</small><b>' + esc(n.judul) + '</b><span>Memuat Ep 1...</span></div></div>';
+        '<div class="ep-lanjut-isi"><small>Drama berikutnya</small><b>' + esc(n.judul) + '</b><span>Memuat Ep ' + (brk && brk.id === n.id ? brk.no : 1) + '...</span></div></div>';
     })();
     epSlides = $$(".ep-slide", epList);
     epSlides.forEach(s => {
@@ -472,7 +537,7 @@
     lanjutOtomatis = false;
   }
 
-  async function bukaEpisode(d, no) {
+  async function bukaEpisode(d, no, lewatRantai) {
     let eps;
     try { eps = await ambilEps(d); } catch (e) { toast(e.message); return; }
     if (!eps.find(x => x.no === no)) { toast("Episode belum tersedia"); return; }
@@ -481,13 +546,17 @@
     jedaFeed();
     suara = true;
     $("#ep-judul").textContent = d.judul;
-    if (putarD !== d || epSlides.filter(x => !x.dataset.lanjut).length !== eps.length || pemutar.dataset.vip !== String(bolehVip())) {
+    if (!lewatRantai) { rantai = [{ id: d.id, no }]; posRantai = 0; }
+    const kunciRantai = posRantai + ":" + rantai.map(x => x.id).join(",");
+    if (lewatRantai || putarD !== d || pemutar.dataset.rantai !== kunciRantai || epSlides.filter(x => !x.dataset.lanjut).length !== eps.length || pemutar.dataset.vip !== String(bolehVip())) {
+      pemutar.dataset.rantai = kunciRantai;
       putarD = d;
       pemutar.dataset.vip = String(bolehVip());
       bangunEpisode(d, eps);
     }
     pemutar.classList.add("buka");
     epAktif = -1;
+    kunciGeser = Date.now() + 700;
     requestAnimationFrame(() => { keEpisode(no, false); aktifkanEp(no); });
   }
 
@@ -629,7 +698,7 @@
     komenD = d;
     $("#km-judul").textContent = fmt(d.jml_komentar || 0) + " komentar";
     $("#km-list").innerHTML = '<p class="km-kosong">Memuat komentar...</p>';
-    renderBawahKomentar();
+        renderBawahKomentar();
     komen.classList.add("buka");
     try {
       const j = await panggil("/api/komentar?drama=" + d.id);
@@ -677,8 +746,9 @@
     const u = SESI.user;
     if (bolehVip()) return '<div class="vp-banner ok"><div><b>✓ VIP ' + esc(u.paket || "") + " aktif</b><small>Sampai " + tgl(u.vip_sampai) + '</small></div><button data-perpanjang>Perpanjang</button></div>';
     return '<div class="vp-banner"><div><b>Buka semua drama</b><small>Mulai ' + rupiah(Math.min(...PAKET.map(p => p.harga))) + " · tanpa iklan</small></div><button data-perpanjang>Langganan</button></div>";
-          }
-    function kartuDrama(d) {
+  }
+
+  function kartuDrama(d) {
     return '<div class="dr-kartu" data-drama="' + d.id + '"><div class="dr-pst">' + sampulHTML(d) +
       (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
       '<span class="dr-jml">' + d.jml_ep + " ep</span></div>" +
@@ -1007,4 +1077,4 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-          
+      
