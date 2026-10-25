@@ -707,7 +707,8 @@
       }).catch(() => {});
       return;
     }
-          '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
+    b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
+            '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
     $("#km-form").onsubmit = async e => {
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
@@ -1109,4 +1110,6 @@
   hapus();
 })();
       
-    b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
+
+      
+      
