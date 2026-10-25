@@ -226,8 +226,7 @@
     const semua = e.target.closest("[data-semua]");
     if (semua) {
       const d = cariDrama(semua.dataset.semua);
-      const pr = progres()[d.id] || 0;
-      const tuju = pr > 1 && pr < d.jml_ep ? pr : 1;
+      const tuju = 1;
       if (bolehEp(d, tuju)) bukaEpisode(d, tuju);
       else bukaSheet(d, tuju - 1, tuju);
       return;
@@ -747,8 +746,8 @@
     $("#km-form").onsubmit = async e => {
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
-            if (!isi || !komenD) return;
-      const tb = $(".km-kirim"); tb.disabled = true;
+      if (!isi || !komenD) return;
+            const tb = $(".km-kirim"); tb.disabled = true;
       try {
         const j = await panggil("/api/komentar", { drama: komenD.id, isi });
         inp.value = "";
@@ -858,9 +857,8 @@
     halEp = Math.min(halEp, Math.max(0, jmlHal - 1));
     const vip = bolehVip();
     const terkunci = !vip && d.gratis < d.jml_ep;
-    const belumTamat = terakhir > 1 && terakhir < d.jml_ep;
-    const lanjutNo = belumTamat ? terakhir : 1;
-    const label = terkunci && !bolehEp(d, lanjutNo) ? "Buka semua " + d.jml_ep + " episode" : (belumTamat ? "Lanjut tonton Ep " + lanjutNo : "Tonton Ep 1");
+    const lanjutNo = 1;
+    const label = terkunci && !bolehEp(d, 1) ? "Buka semua " + d.jml_ep + " episode" : "Tonton Ep 1";
     const fav = favDrama().includes(d.id);
     el.innerHTML =
       '<button class="dt-kembali" id="dt-kembali">← Kembali</button>' +
@@ -1145,4 +1143,5 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-        
+    
+          
