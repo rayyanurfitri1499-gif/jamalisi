@@ -368,13 +368,12 @@
     if (g && typeof muatGoogle === "function") {
       muatGoogle().then(() => {
         if (!g.isConnected) return;
-                google.accounts.id.renderButton(g, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", width: Math.min(320, (g.clientWidth || 300)) });
+        google.accounts.id.renderButton(g, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", width: Math.min(320, (g.clientWidth || 300)) });
       }).catch(() => {});
     }
   }
   sheet.addEventListener("click", e => { if (e.target === sheet) tutupSheet(); });
-
-  const kunciSesi = () => (SESI.user ? SESI.user.id : 0) + ":" + bolehVip();
+    const kunciSesi = () => (SESI.user ? SESI.user.id : 0) + ":" + bolehVip();
   if (typeof setSesi === "function") {
     const setSesiAsli = setSesi;
     setSesi = function (t, u) {
@@ -394,7 +393,7 @@
     '<div class="ep-atas"><button id="ep-tutup" aria-label="Kembali">←</button><div><b id="ep-judul"></b><small id="ep-no"></small></div></div>' +
     '<div id="ep-list"></div>';
   document.body.appendChild(pemutar);
-  const epList = $("#ep-list");
+  let epList = $("#ep-list");
   let putarD = null, putarNo = 1, epSlides = [], epAktif = -1, lanjutOtomatis = false;
   const videoPemutar = () => epSlides.map(s => s.querySelector("video")).filter(Boolean);
   function jedaPemutar() { videoPemutar().forEach(v => v.pause()); }
@@ -409,15 +408,15 @@
     return j.eps;
   }
 
-  const epIO = new IntersectionObserver(es => {
+  const epIOcb = es => {
     es.forEach(en => {
       if (!en.isIntersecting || en.intersectionRatio < 0.6) return;
-      if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
-      if (en.target.dataset.lanjut) { keDramaBerikut(Number(en.target.dataset.lanjut)); return; }
-      if (en.target.dataset.balik) { keDramaSebelum(); return; }
+      if (en.target.dataset.lanjut || en.target.dataset.balik) return; /* pindah drama ditangani setelah geseran selesai */
+      if (Date.now() < kunciGeser) return;
       aktifkanEp(Number(en.target.dataset.no));
     });
-  }, { root: epList, threshold: [0.6] });
+  };
+  let epIO = new IntersectionObserver(epIOcb, { root: epList, threshold: [0.6] });
 
   /* drama berikutnya setelah episode terakhir */
   function pilihBerikut(d) {
@@ -476,8 +475,9 @@
     pindahKe(n, sbl.no, r, posRantai - 1);
   }
   /* cek ulang posisi setelah scroll berhenti, supaya kartu pindah drama tidak pernah macet */
+  let jariTurun = false;
   function cekKartuPindah() {
-    if (!pemutar.classList.contains("buka") || pindahDrama) return;
+    if (!pemutar.classList.contains("buka") || pindahDrama || jariTurun) return;
     if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
     const h = epList.clientHeight || 1;
     const s = epSlides[Math.round(epList.scrollTop / h)];
@@ -486,10 +486,21 @@
     else if (s.dataset.balik) keDramaSebelum();
   }
   let tCekPindah;
-  epList.addEventListener("scroll", () => { clearTimeout(tCekPindah); tCekPindah = setTimeout(cekKartuPindah, 250); }, { passive: true });
+  const jadwalCek = () => { clearTimeout(tCekPindah); tCekPindah = setTimeout(cekKartuPindah, 300); };
+  pemutar.addEventListener("scroll", jadwalCek, { passive: true, capture: true });
+  pemutar.addEventListener("touchstart", () => { jariTurun = true; clearTimeout(tCekPindah); }, { passive: true });
+  document.addEventListener("touchend", () => { jariTurun = false; jadwalCek(); }, { passive: true });
+  document.addEventListener("touchcancel", () => { jariTurun = false; jadwalCek(); }, { passive: true });
 
   function bangunEpisode(d, eps) {
     epIO.disconnect();
+    /* wadah episode selalu baru, supaya posisi gulir/geseran lama tidak terbawa ke drama berikutnya */
+    const wadahBaru = document.createElement("div");
+    wadahBaru.id = "ep-list";
+    epList.replaceWith(wadahBaru);
+    epList = wadahBaru;
+    epIO = new IntersectionObserver(epIOcb, { root: epList, threshold: [0.6] });
+    jariTurun = false;
     videoPemutar().forEach(lepasVideo);
     epAktif = -1;
     const fav = favDrama().includes(d.id);
@@ -621,7 +632,8 @@
     lanjutFeed();
   }
 
-  epList.addEventListener("click", e => {
+  pemutar.addEventListener("click", e => {
+    if (!e.target.closest("#ep-list")) return;
     const lj = e.target.closest("[data-lanjut]");
     if (lj) { keDramaBerikut(Number(lj.dataset.lanjut)); return; }
     if (e.target.closest("[data-balik]")) { keDramaSebelum(); return; }
@@ -735,10 +747,10 @@
     $("#km-form").onsubmit = async e => {
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
-      if (!isi || !komenD) return;
+            if (!isi || !komenD) return;
       const tb = $(".km-kirim"); tb.disabled = true;
       try {
-                const j = await panggil("/api/komentar", { drama: komenD.id, isi });
+        const j = await panggil("/api/komentar", { drama: komenD.id, isi });
         inp.value = "";
         const lst = $("#km-list");
         const kosong = $(".km-kosong", lst); if (kosong) kosong.remove();
@@ -1133,4 +1145,4 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-                                                          
+        
