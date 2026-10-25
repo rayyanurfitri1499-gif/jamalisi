@@ -348,12 +348,12 @@
         : '<div class="sh-login"><p class="muted" style="margin-bottom:10px">Masuk dulu untuk berlangganan</p><div id="sh-gbtn"></div>' +
           '<a href="#" id="sh-email">Masuk atau daftar pakai email</a></div>') +
       "</div>";
-        $(".sh-x", sheet).onclick = tutupSheet;
+    $(".sh-x", sheet).onclick = tutupSheet;
     $$(".sh-pk", sheet).forEach(b => b.onclick = () => { paketSheet = b.dataset.pk; renderSheet(); });
     const bayar = $("#sh-bayar");
     if (bayar) bayar.onclick = async () => {
       bayar.disabled = true; bayar.textContent = "Menyiapkan pembayaran...";
-      try {
+            try {
         const j = await panggil("/api/bayar", { paket: paketSheet });
         location.href = j.url;
       } catch (err) {
@@ -411,7 +411,7 @@
   const epIO = new IntersectionObserver(es => {
     es.forEach(en => {
       if (!en.isIntersecting || en.intersectionRatio < 0.6) return;
-      if (Date.now() < kunciGeser) return;
+      if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
       if (en.target.dataset.lanjut) { keDramaBerikut(Number(en.target.dataset.lanjut)); return; }
       if (en.target.dataset.balik) { keDramaSebelum(); return; }
       aktifkanEp(Number(en.target.dataset.no));
@@ -429,29 +429,58 @@
   }
   /* rantai drama yang ditonton berurutan di pemutar, supaya bisa scroll balik ke drama sebelumnya */
   let pindahDrama = false, rantai = [], posRantai = 0, kunciGeser = 0;
+  function kartuPindah(teks) {
+    const s = epSlides.find(x => x.dataset.lanjut || x.dataset.balik ? Math.abs(x.offsetTop - epList.scrollTop) < 5 : false);
+    const sp = s && s.querySelector(".ep-lanjut-isi span");
+    if (sp) sp.textContent = teks;
+  }
+  async function pindahKe(n, no, simpanRantai, posBaru) {
+    const lamaRantai = rantai.map(x => ({ ...x })), lamaPos = posRantai;
+    pindahDrama = true;
+    videoPemutar().forEach(v => v.pause());
+    rantai = simpanRantai;
+    posRantai = posBaru;
+    try { await bukaEpisode(n, no, true); } catch (e) {}
+    pindahDrama = false;
+    if (putarD !== n) {
+      rantai = lamaRantai;
+      posRantai = lamaPos;
+      kartuPindah("Gagal memuat. Ketuk untuk coba lagi.");
+    }
+  }
   function keDramaBerikut(id) {
     const n = cariDrama(id);
     if (!n || pindahDrama) return;
-    pindahDrama = true;
-    videoPemutar().forEach(v => v.pause());
+    kartuPindah("Memuat Ep...");
     const epAkhir = epSlides.filter(x => x.dataset.no).map(x => Number(x.dataset.no)).pop() || putarNo;
-    if (rantai[posRantai]) rantai[posRantai].no = epAkhir;
-    if (!rantai[posRantai + 1] || rantai[posRantai + 1].id !== n.id) {
-      rantai = rantai.slice(0, posRantai + 1);
-      rantai.push({ id: n.id, no: 1 });
+    let r = rantai.map(x => ({ ...x }));
+    if (r[posRantai]) r[posRantai].no = epAkhir;
+    if (!r[posRantai + 1] || r[posRantai + 1].id !== n.id) {
+      r = r.slice(0, posRantai + 1);
+      r.push({ id: n.id, no: 1 });
     }
-    posRantai++;
-    bukaEpisode(n, rantai[posRantai].no, true).finally(() => { pindahDrama = false; });
+    pindahKe(n, r[posRantai + 1].no, r, posRantai + 1);
   }
   function keDramaSebelum() {
     const sbl = rantai[posRantai - 1], n = sbl && cariDrama(sbl.id);
     if (!n || pindahDrama) return;
-    pindahDrama = true;
-    videoPemutar().forEach(v => v.pause());
-    rantai[posRantai].no = putarNo;
-    posRantai--;
-    bukaEpisode(n, sbl.no, true).finally(() => { pindahDrama = false; });
+    kartuPindah("Memuat...");
+    const r = rantai.map(x => ({ ...x }));
+    if (r[posRantai]) r[posRantai].no = putarNo;
+    pindahKe(n, sbl.no, r, posRantai - 1);
   }
+  /* cek ulang posisi setelah scroll berhenti, supaya kartu pindah drama tidak pernah macet */
+  function cekKartuPindah() {
+    if (!pemutar.classList.contains("buka") || pindahDrama) return;
+    if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
+    const h = epList.clientHeight || 1;
+    const s = epSlides[Math.round(epList.scrollTop / h)];
+    if (!s || Math.abs(s.offsetTop - epList.scrollTop) > h * 0.4) return;
+    if (s.dataset.lanjut) keDramaBerikut(Number(s.dataset.lanjut));
+    else if (s.dataset.balik) keDramaSebelum();
+  }
+  let tCekPindah;
+  epList.addEventListener("scroll", () => { clearTimeout(tCekPindah); tCekPindah = setTimeout(cekKartuPindah, 250); }, { passive: true });
 
   function bangunEpisode(d, eps) {
     epIO.disconnect();
@@ -460,7 +489,7 @@
     const fav = favDrama().includes(d.id);
     const sbl = posRantai > 0 && rantai[posRantai - 1] ? cariDrama(rantai[posRantai - 1].id) : null;
     epList.innerHTML = (sbl
-      ? '<div class="ep-slide ep-lanjut ep-balik" data-balik="' + sbl.id + '"' + (sbl.sampul ? ' style="background-image:url(\'' + esc(sbl.sampul) + '\')"' : "") + '>' +
+      ? '<div class="ep-slide ep-lanjut ep-balik" data-balik="' + sbl.id + '">' +
         '<div class="ep-lanjut-isi"><small>Drama sebelumnya</small><b>' + esc(sbl.judul) + '</b><span>Kembali ke Ep ' + rantai[posRantai - 1].no + '...</span></div></div>'
       : "") + eps.map(e => {
       const kunci = !bolehEp(d, e.no);
@@ -482,7 +511,7 @@
       const brk = rantai[posRantai + 1];
       const n = (brk && cariDrama(brk.id)) || pilihBerikut(d);
       if (!n) return "";
-      return '<div class="ep-slide ep-lanjut" data-lanjut="' + n.id + '"' + (n.sampul ? ' style="background-image:url(\'' + esc(n.sampul) + '\')"' : "") + '>' +
+      return '<div class="ep-slide ep-lanjut" data-lanjut="' + n.id + '">' +
         '<div class="ep-lanjut-isi"><small>Drama berikutnya</small><b>' + esc(n.judul) + '</b><span>Memuat Ep ' + (brk && brk.id === n.id ? brk.no : 1) + '...</span></div></div>';
     })();
     epSlides = $$(".ep-slide", epList);
@@ -570,6 +599,9 @@
   }
 
   epList.addEventListener("click", e => {
+    const lj = e.target.closest("[data-lanjut]");
+    if (lj) { keDramaBerikut(Number(lj.dataset.lanjut)); return; }
+    if (e.target.closest("[data-balik]")) { keDramaSebelum(); return; }
     const buka = e.target.closest("[data-buka]");
     if (buka) { const no = Number(buka.dataset.buka); bukaSheet(putarD, no - 1, no); return; }
     const km = e.target.closest("[data-komen]");
@@ -675,8 +707,7 @@
       }).catch(() => {});
       return;
     }
-    b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
-      '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
+          '<input id="km-input" maxlength="300" placeholder="Tambahkan komentar..." autocomplete="off"><button class="km-kirim" type="submit">Kirim</button></form>';
     $("#km-form").onsubmit = async e => {
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
@@ -698,7 +729,7 @@
     komenD = d;
     $("#km-judul").textContent = fmt(d.jml_komentar || 0) + " komentar";
     $("#km-list").innerHTML = '<p class="km-kosong">Memuat komentar...</p>';
-        renderBawahKomentar();
+    renderBawahKomentar();
     komen.classList.add("buka");
     try {
       const j = await panggil("/api/komentar?drama=" + d.id);
@@ -1078,3 +1109,4 @@
   hapus();
 })();
       
+    b.innerHTML = '<form id="km-form" class="km-form">' + avatarHTML(SESI.user.nama, SESI.user.foto, "km-av") +
