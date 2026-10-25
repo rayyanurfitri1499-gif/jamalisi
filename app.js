@@ -15,9 +15,10 @@ const VIDEO_VIP = [
 const QRIS_GAMBAR = "";
 
 const PAKET = [
-  { id: "harian",  nama: "Harian",  harga: 10000,  hari: 1,   ket: "per hari" },
-  { id: "bulanan", nama: "Bulanan", harga: 250000,  hari: 30,  ket: "per bulan" },
-  { id: "tahunan", nama: "Tahunan", harga: 550000, hari: 365, ket: "per tahun" }
+  { id: "harian",   nama: "Harian",   harga: 10000,  hari: 1,   ket: "per hari" },
+  { id: "mingguan", nama: "Mingguan", harga: 30000,  hari: 7,   ket: "per minggu" },
+  { id: "bulanan",  nama: "Bulanan",  harga: 100000, hari: 30,  ket: "per bulan" },
+  { id: "tahunan",  nama: "Tahunan",  harga: 450000, hari: 365, ket: "per tahun" }
 ];
 
 const B = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/";
