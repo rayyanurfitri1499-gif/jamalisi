@@ -591,8 +591,25 @@
     }
     pemutar.classList.add("buka");
     epAktif = -1;
-    kunciGeser = Date.now() + 700;
-    requestAnimationFrame(() => { keEpisode(no, false); aktifkanEp(no); });
+    kunciGeser = Date.now() + 900;
+    /* hentikan sisa geseran jari & snap lama, lalu lompat tepat ke episode tujuan */
+    epList.style.overflowY = "hidden";
+    epList.style.scrollSnapType = "none";
+    const lompat = () => {
+      const s = epSlides.find(x => Number(x.dataset.no) === no);
+      if (s) epList.scrollTop = s.offsetTop;
+    };
+    lompat();
+    requestAnimationFrame(() => {
+      lompat();
+      aktifkanEp(no);
+      setTimeout(() => {
+        lompat();
+        epList.style.overflowY = "";
+        epList.style.scrollSnapType = "";
+        lompat();
+      }, 450);
+    });
   }
 
   function tutupPemutar() {
@@ -721,7 +738,7 @@
       if (!isi || !komenD) return;
       const tb = $(".km-kirim"); tb.disabled = true;
       try {
-        const j = await panggil("/api/komentar", { drama: komenD.id, isi });
+                const j = await panggil("/api/komentar", { drama: komenD.id, isi });
         inp.value = "";
         const lst = $("#km-list");
         const kosong = $(".km-kosong", lst); if (kosong) kosong.remove();
@@ -738,7 +755,7 @@
     $("#km-list").innerHTML = '<p class="km-kosong">Memuat komentar...</p>';
     renderBawahKomentar();
     komen.classList.add("buka");
-        try {
+    try {
       const j = await panggil("/api/komentar?drama=" + d.id);
       if (komenD !== d) return;
       $("#km-list").innerHTML = j.komentar.length ? j.komentar.map(barisKomentar).join("") : '<p class="km-kosong">Belum ada komentar. Jadi yang pertama!</p>';
@@ -1116,5 +1133,4 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-       
-        
+                                                          
