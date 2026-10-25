@@ -115,19 +115,8 @@
     es.forEach(en => { if (en.isIntersecting && en.intersectionRatio >= 0.6) aktifkanSlide(Number(en.target.dataset.i)); });
   }, { root: list, threshold: [0.6] });
 
-  function renderFeed() {
-    slideIO.disconnect();
-    slides.forEach(s => lepasVideo(s.querySelector("video")));
-    const urut = urutkan();
-    aktifIdx = -1;
-    if (!urut.length) {
-      list.innerHTML = '<div class="fd-kosong"><b>Belum ada drama</b><span>Drama yang ditambahkan admin akan muncul di sini.</span></div>';
-      slides = [];
-      return;
-    }
-    const fav = favDrama();
-    list.innerHTML = urut.map((d, i) =>
-      '<div class="fd-slide" data-i="' + i + '"' + (d.sampul ? ' style="background-image:url(\'' + esc(d.sampul) + '\')"' : "") + ">" +
+  function slideHTML(d, i, fav) {
+    return '<div class="fd-slide" data-i="' + i + '"' + (d.sampul ? ' style="background-image:url(\'' + esc(d.sampul) + '\')"' : "") + ">" +
       '<video playsinline muted preload="none"' + (d.sampul ? ' poster="' + esc(d.sampul) + '"' : "") + "></video>" +
       '<div class="fd-jeda">' + IK.play + "</div>" +
       (suara ? "" : '<div class="fd-suara">🔇 Ketuk untuk suara</div>') +
@@ -139,21 +128,55 @@
       '<div class="fd-bawah"><div class="fd-judul">' + esc(d.judul) + "</div>" +
       '<div class="fd-ket">Ep 1' + (d.sinopsis ? " · " + esc(d.sinopsis) : "") + "</div>" +
       '<button class="fd-semua" data-semua="' + d.id + '">Tonton semua (' + d.jml_ep + " episode)</button></div>" +
-      '<div class="fd-muat"><i></i></div></div>'
-    ).join("");
-    slides = $$(".fd-slide", list);
-    slides.forEach((s, i) => {
-      s._d = urut[i];
-      const v = s.querySelector("video");
-      v.addEventListener("loadedmetadata", () => v.classList.toggle("lebar", v.videoWidth > v.videoHeight));
-      v.addEventListener("timeupdate", () => {
-        if (v.duration) s.querySelector(".fd-muat i").style.width = (v.currentTime / v.duration * 100) + "%";
-        if (v.currentTime > 3) hitungTonton(s._d);
-      });
-      v.addEventListener("ended", () => selesaiCuplikan(s._d));
-      slideIO.observe(s);
+      '<div class="fd-muat"><i></i></div></div>';
+  }
+
+  function pasangSlide(s, d) {
+    s._d = d;
+    const v = s.querySelector("video");
+    v.addEventListener("loadedmetadata", () => v.classList.toggle("lebar", v.videoWidth > v.videoHeight));
+    v.addEventListener("timeupdate", () => {
+      if (v.duration) s.querySelector(".fd-muat i").style.width = (v.currentTime / v.duration * 100) + "%";
+      if (v.currentTime > 3) hitungTonton(s._d);
     });
+    v.addEventListener("ended", () => selesaiCuplikan(s._d));
+    slideIO.observe(s);
+  }
+
+  /* ganti = mulai dari drama yang berbeda dari terakhir kali (refresh, mahkota, tombol Home) */
+  function renderFeed(ganti) {
+    slideIO.disconnect();
+    slides.forEach(s => lepasVideo(s.querySelector("video")));
+    let urut = urutkan();
+    aktifIdx = -1;
+    if (!urut.length) {
+      list.innerHTML = '<div class="fd-kosong"><b>Belum ada drama</b><span>Drama yang ditambahkan admin akan muncul di sini.</span></div>';
+      slides = [];
+      return;
+    }
+    if (ganti && urut.length > 1) {
+      const idx = urut.findIndex(x => x.id === sk("se_feed_awal", 0));
+      if (idx > -1) { const mulai = (idx + 1) % urut.length; urut = urut.slice(mulai).concat(urut.slice(0, mulai)); }
+    }
+    simpan("se_feed_awal", urut[0].id);
+    const fav = favDrama();
+    list.innerHTML = urut.map((d, i) => slideHTML(d, i, fav)).join("");
+    slides = $$(".fd-slide", list);
+    slides.forEach((s, i) => pasangSlide(s, urut[i]));
     list.scrollTop = 0;
+  }
+
+  /* feed tidak pernah habis: kalau hampir sampai bawah, tambah drama lagi dengan urutan acak */
+  function tambahFeed() {
+    const calon = DRAMA.filter(x => x.gratis > 0 && x.ep1);
+    if (!calon.length || !slides.length) return;
+    const acak = calon.map(x => ({ x, r: Math.random() })).sort((a, b) => a.r - b.r).map(o => o.x);
+    const akhir = slides[slides.length - 1]._d;
+    if (acak.length > 1 && akhir && acak[0].id === akhir.id) acak.push(acak.shift());
+    const fav = favDrama(), awal = slides.length;
+    list.insertAdjacentHTML("beforeend", acak.map((d, k) => slideHTML(d, awal + k, fav)).join(""));
+    slides = $$(".fd-slide", list);
+    for (let k = awal; k < slides.length; k++) pasangSlide(slides[k], acak[k - awal]);
   }
 
   function lepasVideo(v) {
@@ -163,6 +186,7 @@
   function aktifkanSlide(i) {
     if (i === aktifIdx) return;
     aktifIdx = i;
+    if (i >= slides.length - 2) tambahFeed();
     slides.forEach((s, j) => {
       const v = s.querySelector("video"), d = s._d;
       if (j === i) {
@@ -240,7 +264,9 @@
     $$(".fd-tab button", feed).forEach(x => x.classList.toggle("on", x === b));
     renderFeed();
   });
-  $(".crown", feed).onclick = () => { renderFeed(); };
+  $(".crown", feed).onclick = () => { renderFeed(true); };
+  const navHome = $('.bottom button[data-page="home"]');
+  if (navHome) navHome.addEventListener("click", () => { if (DRAMA.length) renderFeed(true); });
   $("#fd-cari").onclick = () => bukaCari();
 
   /* ======================= LEMBAR LANGGANAN ======================= */
@@ -312,13 +338,14 @@
     setSesi = function (t, u) {
       const lama = kunciSesi();
       setSesiAsli(t, u);
-      if (lama === kunciSesi()) return;
+            if (lama === kunciSesi()) return;
       if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
       if (halaman === "langganan") renderLangganan();
     };
-                        }
-    /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
+  }
+
+  /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -341,8 +368,30 @@
   }
 
   const epIO = new IntersectionObserver(es => {
-    es.forEach(en => { if (en.isIntersecting && en.intersectionRatio >= 0.6) aktifkanEp(Number(en.target.dataset.no)); });
+    es.forEach(en => {
+      if (!en.isIntersecting || en.intersectionRatio < 0.6) return;
+      if (en.target.dataset.lanjut) { keDramaBerikut(Number(en.target.dataset.lanjut)); return; }
+      aktifkanEp(Number(en.target.dataset.no));
+    });
   }, { root: epList, threshold: [0.6] });
+
+  /* drama berikutnya setelah episode terakhir */
+  function pilihBerikut(d) {
+    const calon = DRAMA.filter(x => x.id !== d.id && x.gratis > 0 && x.ep1);
+    if (!calon.length) return null;
+    const lihat = dilihat();
+    const belum = calon.filter(x => !lihat.includes(x.id));
+    const kumpulan = belum.length ? belum : calon;
+    return kumpulan[Math.floor(Math.random() * kumpulan.length)];
+  }
+  let pindahDrama = false;
+  function keDramaBerikut(id) {
+    const n = cariDrama(id);
+    if (!n || pindahDrama) return;
+    pindahDrama = true;
+    videoPemutar().forEach(v => v.pause());
+    bukaEpisode(n, 1).finally(() => { pindahDrama = false; });
+  }
 
   function bangunEpisode(d, eps) {
     epIO.disconnect();
@@ -365,7 +414,12 @@
         (d.sinopsis ? '<div class="fd-ket ep-sinop" data-sinop>' + esc(d.sinopsis) + "</div>" : "") +
         '<div class="fd-muat"><i></i></div>' +
         '<button class="ep-total" data-eplist="' + d.id + '">' + IK.daftar + "<span>Total " + d.jml_ep + " episode</span><b>›</b></button></div></div>";
-    }).join("");
+    }).join("") + (function () {
+      const n = pilihBerikut(d);
+      if (!n) return "";
+      return '<div class="ep-slide ep-lanjut" data-lanjut="' + n.id + '"' + (n.sampul ? ' style="background-image:url(\'' + esc(n.sampul) + '\')"' : "") + '>' +
+        '<div class="ep-lanjut-isi"><small>Drama berikutnya</small><b>' + esc(n.judul) + '</b><span>Memuat Ep 1...</span></div></div>';
+    })();
     epSlides = $$(".ep-slide", epList);
     epSlides.forEach(s => {
       const v = s.querySelector("video");
@@ -380,7 +434,7 @@
   }
 
   function keEpisode(no, otomatis) {
-    const s = epSlides.find(x => Number(x.dataset.no) === no);
+    const s = epSlides.find(x => Number(x.dataset.no) === no) || (otomatis ? epSlides.find(x => x.dataset.lanjut) : null);
     if (!s) return;
     lanjutOtomatis = !!otomatis;
     epList.scrollTo({ top: s.offsetTop, behavior: otomatis ? "smooth" : "auto" });
@@ -427,7 +481,7 @@
     jedaFeed();
     suara = true;
     $("#ep-judul").textContent = d.judul;
-    if (putarD !== d || epSlides.length !== eps.length || pemutar.dataset.vip !== String(bolehVip())) {
+    if (putarD !== d || epSlides.filter(x => !x.dataset.lanjut).length !== eps.length || pemutar.dataset.vip !== String(bolehVip())) {
       putarD = d;
       pemutar.dataset.vip = String(bolehVip());
       bangunEpisode(d, eps);
@@ -623,9 +677,8 @@
     const u = SESI.user;
     if (bolehVip()) return '<div class="vp-banner ok"><div><b>✓ VIP ' + esc(u.paket || "") + " aktif</b><small>Sampai " + tgl(u.vip_sampai) + '</small></div><button data-perpanjang>Perpanjang</button></div>';
     return '<div class="vp-banner"><div><b>Buka semua drama</b><small>Mulai ' + rupiah(Math.min(...PAKET.map(p => p.harga))) + " · tanpa iklan</small></div><button data-perpanjang>Langganan</button></div>";
-  }
-
-  function kartuDrama(d) {
+          }
+    function kartuDrama(d) {
     return '<div class="dr-kartu" data-drama="' + d.id + '"><div class="dr-pst">' + sampulHTML(d) +
       (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
       '<span class="dr-jml">' + d.jml_ep + " ep</span></div>" +
@@ -637,7 +690,7 @@
     DRAMA.forEach(d => String(d.kategori || "").split(",").map(x => x.trim()).filter(Boolean).forEach(k => { if (!kat.includes(k)) kat.push(k); }));
     if (!kat.includes(kategoriPilih)) kategoriPilih = "Semua";
     let isi = DRAMA.slice();
-        if (kategoriPilih === "Terbaru") isi.sort((a, b) => b.dibuat - a.dibuat);
+    if (kategoriPilih === "Terbaru") isi.sort((a, b) => b.dibuat - a.dibuat);
     else if (kategoriPilih === "Populer") isi.sort((a, b) => b.ditonton - a.ditonton);
     else if (kategoriPilih !== "Semua") isi = isi.filter(d => String(d.kategori || "").split(",").map(x => x.trim()).includes(kategoriPilih));
     else isi.sort((a, b) => (b.sematkan - a.sematkan) || (b.dibuat - a.dibuat));
@@ -871,7 +924,7 @@
       list.innerHTML = '<div class="fd-kosong"><b>Drama gagal dimuat</b><span>Periksa koneksi lalu buka ulang situs.</span></div>';
       return;
     }
-    renderFeed();
+    renderFeed(true);
     const q = new URLSearchParams(location.search);
     const idBagi = Number(q.get("drama"));
     if (idBagi && cariDrama(idBagi)) {
@@ -954,5 +1007,4 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-      
-    
+          
