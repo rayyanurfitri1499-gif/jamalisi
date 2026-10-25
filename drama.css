@@ -107,6 +107,7 @@ body.mode-feed{overflow:hidden}
 .ep-atas div{flex:1;min-width:0}
 .ep-atas b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ep-atas small{font-size:12px;color:#d8d0ee}
+.ep-bawah{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:24px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.75))}
 .ep-bawah button{flex:1;padding:11px 6px;border-radius:12px;background:rgba(255,255,255,.12);font-size:13px;font-weight:700}
 .ep-bawah button.utama{background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700}
 .ep-bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.15)}
@@ -215,5 +216,4 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #fd-tarik.siap i{border-color:var(--gold)}
 #fd-tarik.muat i{border-color:rgba(255,255,255,.35);border-top-color:var(--gold);animation:fdPutar .7s linear infinite}
 @keyframes fdPutar{to{transform:rotate(360deg)}}
-  
-.ep-bawah{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;padding:24px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.75))}
+              
