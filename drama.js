@@ -815,10 +815,12 @@
   }
 
   function kartuDrama(d) {
+    const pr = Math.min(progres()[d.id] || 0, d.jml_ep || 0);
     return '<div class="dr-kartu" data-drama="' + d.id + '"><div class="dr-pst">' + sampulHTML(d) +
       (bolehVip() || d.gratis >= d.jml_ep ? "" : '<span class="dr-gembok">' + IK.gembok + "</span>") +
-      '<span class="dr-jml">' + d.jml_ep + " ep</span></div>" +
-      '<div class="dr-nama">' + esc(d.judul) + "</div></div>";
+      (pr ? '<span class="dr-prog"><i style="width:' + Math.round(pr / d.jml_ep * 100) + '%"></i></span>' : "") +
+      '</div><div class="dr-nama">' + esc(d.judul) + "</div>" +
+      '<div class="dr-ket">' + (pr ? "Ep. " + pr + "/" + d.jml_ep : d.jml_ep + " episode") + "</div></div>";
   }
 
   function renderKatalog(el) {
@@ -1143,5 +1145,5 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-    
-          
+                                 
+      
