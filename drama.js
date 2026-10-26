@@ -29,7 +29,19 @@
   const bolehVip = () => { try { return aktif(); } catch (e) { return false; } };
   const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + "jt" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + "rb" : String(n || 0);
   const cariDrama = id => DRAMA.find(d => d.id === Number(id));
-  const srcEp = epId => API + "/e/" + epId + "?t=" + encodeURIComponent(SESI.token || "");
+  /* kunci putar: kode khusus video dari server, berlaku 6 jam, tidak bisa dipakai untuk login */
+  let KUNCI = { t: "", exp: 0 };
+  async function siapkanKunci(paksa) {
+    if (!SESI.token) { KUNCI = { t: "", exp: 0 }; return; }
+    if (!paksa && KUNCI.t && KUNCI.exp - Date.now() > 3600000) return;
+    try {
+      const r = await fetch(API + "/api/kunci-putar", { headers: { Authorization: "Bearer " + SESI.token } });
+      const j = await r.json();
+      KUNCI = r.ok && j.t ? j : { t: "", exp: 0 };
+    } catch (e) {}
+  }
+  setInterval(() => siapkanKunci(), 20 * 60000);
+  const srcEp = epId => API + "/e/" + epId + (KUNCI.t ? "?t=" + encodeURIComponent(KUNCI.t) : "");
   const bolehEp = (d, no) => no <= (d.gratis || 0) || bolehVip();
 
   /* ---------- matikan home lama (slider & thumbnail) supaya tidak berat ---------- */
@@ -233,7 +245,7 @@
     }
     const km = e.target.closest("[data-komen]");
     if (km) { bukaKomentar(cariDrama(km.dataset.komen)); return; }
-    const fav = e.target.closest("[data-fav-drama]");
+        const fav = e.target.closest("[data-fav-drama]");
     if (fav) { toggleFav(cariDrama(fav.dataset.favDrama)); return; }
     const bg = e.target.closest("[data-bagi]");
     if (bg) { bagikan(cariDrama(bg.dataset.bagi)); return; }
@@ -372,12 +384,15 @@
     }
   }
   sheet.addEventListener("click", e => { if (e.target === sheet) tutupSheet(); });
-    const kunciSesi = () => (SESI.user ? SESI.user.id : 0) + ":" + bolehVip();
+
+  const kunciSesi = () => (SESI.user ? SESI.user.id : 0) + ":" + bolehVip();
   if (typeof setSesi === "function") {
     const setSesiAsli = setSesi;
     setSesi = function (t, u) {
       const lama = kunciSesi();
       setSesiAsli(t, u);
+      siapkanKunci(true);
+      if (typeof isiTanda === "function") isiTanda();
       if (lama === kunciSesi()) return;
       if (komen.classList.contains("buka")) renderBawahKomentar();
       if (sheet.classList.contains("buka")) renderSheet();
@@ -477,7 +492,7 @@
   let jariTurun = false;
   function cekKartuPindah() {
     if (!pemutar.classList.contains("buka") || pindahDrama || jariTurun) return;
-    if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
+        if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
     const h = epList.clientHeight || 1;
     const s = epSlides[Math.round(epList.scrollTop / h)];
     if (!s || Math.abs(s.offsetTop - epList.scrollTop) > h * 0.4) return;
@@ -490,6 +505,13 @@
   pemutar.addEventListener("touchstart", () => { jariTurun = true; clearTimeout(tCekPindah); }, { passive: true });
   document.addEventListener("touchend", () => { jariTurun = false; jadwalCek(); }, { passive: true });
   document.addEventListener("touchcancel", () => { jariTurun = false; jadwalCek(); }, { passive: true });
+
+  /* tanda air kecil di bawah tombol Bagikan: email + ID penonton */
+  function isiTanda() {
+    const u = SESI.user;
+    const teks = u ? esc(u.email || "") + "<br>ID " + esc(String(u.id || "")) : "";
+    $$(".ep-tanda").forEach(el => { el.innerHTML = teks; });
+  }
 
   function bangunEpisode(d, eps) {
     epIO.disconnect();
@@ -518,7 +540,7 @@
         '<div class="fd-sisi">' +
         '<button data-komen="' + d.id + '">' + IK.komen + '<span data-jkom="' + d.id + '">' + fmt(d.jml_komentar || 0) + "</span></button>" +
         '<button data-fav-drama="' + d.id + '" class="' + (fav ? "on" : "") + '">' + IK.bintang + "Favorit</button>" +
-        '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button></div>" +
+        '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button><div class=\"ep-tanda\"></div></div>" +
         '<div class="fd-bawah ep-bawah2"><div class="fd-judul">Ep.' + e.no + ' <span class="ep-garis">|</span> ' + esc(d.judul) + "</div>" +
         (d.sinopsis ? '<div class="fd-ket ep-sinop" data-sinop>' + esc(d.sinopsis) + "</div>" : "") +
         '<div class="fd-muat"><i></i></div>' +
@@ -531,6 +553,7 @@
         '<div class="ep-lanjut-isi"><small>Drama berikutnya</small><b>' + esc(n.judul) + '</b><span>Memuat Ep ' + (brk && brk.id === n.id ? brk.no : 1) + '...</span></div></div>';
     })();
     epSlides = $$(".ep-slide", epList);
+    isiTanda();
     epSlides.forEach(s => {
       const v = s.querySelector("video");
       if (v) {
@@ -583,6 +606,7 @@
   }
 
   async function bukaEpisode(d, no, lewatRantai) {
+    await siapkanKunci();
     let eps;
     try { eps = await ambilEps(d); } catch (e) { toast(e.message); return; }
     if (!eps.find(x => x.no === no)) { toast("Episode belum tersedia"); return; }
@@ -715,7 +739,7 @@
   };
   function avatarHTML(nama, foto, kelas) {
     if (foto) return '<img class="' + kelas + '" src="' + esc(foto) + '" alt="" referrerpolicy="no-referrer" loading="lazy">';
-    const h = String(nama || "?").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+        const h = String(nama || "?").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
     return '<span class="' + kelas + ' km-inisial" style="background:hsl(' + h + ',55%,42%)">' + esc(String(nama || "?").trim().charAt(0).toUpperCase() || "?") + "</span>";
   }
   function barisKomentar(k) {
@@ -747,7 +771,7 @@
       e.preventDefault();
       const inp = $("#km-input"), isi = inp.value.trim();
       if (!isi || !komenD) return;
-            const tb = $(".km-kirim"); tb.disabled = true;
+      const tb = $(".km-kirim"); tb.disabled = true;
       try {
         const j = await panggil("/api/komentar", { drama: komenD.id, isi });
         inp.value = "";
@@ -962,7 +986,7 @@
   }
   const renderAkunFoto = renderAkun;
   renderAkun = function () {
-    renderAkunFoto();
+        renderAkunFoto();
     const u = SESI.user, av = $("#page-akun .avatar");
     if (!u || !av) return;
     av.outerHTML = '<div class="akun-foto">' + avatarHTML(u.nama, u.foto, "akun-av") +
@@ -980,6 +1004,67 @@
       } catch (err) { toast(err.message); }
     };
   };
+  if (halaman === "akun") renderAkun();
+
+  /* ======================= OTP SAAT DAFTAR ======================= */
+  let otpMundur = 0, otpTimer = null;
+  function aturTombolOtp() {
+    const b = $("#otp-kirim");
+    if (!b) return;
+    b.disabled = otpMundur > 0;
+    b.textContent = otpMundur > 0 ? "Kirim ulang (" + otpMundur + ")" : "Kirim kode";
+  }
+  function mulaiMundur(detik) {
+    otpMundur = detik;
+    clearInterval(otpTimer);
+    otpTimer = setInterval(() => {
+      otpMundur--;
+      if (otpMundur <= 0) { otpMundur = 0; clearInterval(otpTimer); }
+      aturTombolOtp();
+    }, 1000);
+    aturTombolOtp();
+  }
+  const renderAkunOtp = renderAkun;
+  renderAkun = function () {
+    renderAkunOtp();
+    const form = $("#form-auth");
+    if (!form || !$("#a-nama") || $("#a-otp")) return;
+    const kirim = form.querySelector("button[type=submit]");
+    const baris = document.createElement("div");
+    baris.className = "otp-baris";
+    baris.innerHTML = '<input id="a-otp" inputmode="numeric" maxlength="6" placeholder="Kode OTP (6 angka)" autocomplete="one-time-code">' +
+      '<button type="button" class="btn ghost otp-kirim" id="otp-kirim">Kirim kode</button>';
+    const ket = document.createElement("p");
+    ket.className = "muted otp-ket";
+    ket.textContent = "Tekan \"Kirim kode\", lalu buka email kamu dan masukkan 6 angka. Cek juga folder Spam.";
+    form.insertBefore(baris, kirim);
+    form.insertBefore(ket, kirim);
+    $("#a-otp").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6); });
+    aturTombolOtp();
+    $("#otp-kirim").onclick = async () => {
+      const email = ($("#a-email").value || "").trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("Isi email yang benar dulu"); $("#a-email").focus(); return; }
+      const b = $("#otp-kirim");
+      b.disabled = true; b.textContent = "Mengirim...";
+      try {
+        await panggil("/api/otp/kirim", { email });
+        toast("Kode dikirim ke " + email);
+        mulaiMundur(60);
+        $("#a-otp").focus();
+      } catch (err) {
+        toast(err.message);
+        const m = /(\d+) detik/.exec(err.message);
+        if (m) mulaiMundur(Number(m[1])); else aturTombolOtp();
+      }
+    };
+  };
+  if (typeof panggil === "function") {
+    const panggilAsli = panggil;
+    panggil = function (path, body) {
+      if (path === "/api/daftar" && body && $("#a-otp")) body.otp = $("#a-otp").value.trim();
+      return panggilAsli(path, body);
+    };
+  }
   if (halaman === "akun") renderAkun();
 
   /* ======================= NAVIGASI ======================= */
@@ -1073,6 +1158,7 @@
   }
 
   aturMode();
+  siapkanKunci();
   muatDrama();
 })();
 
@@ -1145,5 +1231,4 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-                                 
       
