@@ -216,4 +216,13 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #fd-tarik.siap i{border-color:var(--gold)}
 #fd-tarik.muat i{border-color:rgba(255,255,255,.35);border-top-color:var(--gold);animation:fdPutar .7s linear infinite}
 @keyframes fdPutar{to{transform:rotate(360deg)}}
-                     
+
+/* ===== KARTU DRAMA ALA MELOLO ===== */
+.dr-grid{column-gap:10px;row-gap:18px}
+.dr-pst{aspect-ratio:5/7;border-radius:8px}
+.dr-jml{display:none}
+.dr-prog{position:absolute;left:8px;right:8px;bottom:7px;height:3px;border-radius:3px;background:rgba(255,255,255,.3);overflow:hidden}
+.dr-prog i{display:block;height:100%;background:#fff;border-radius:3px}
+.dr-nama{font-size:13px;font-weight:600;margin-top:7px;line-height:1.35;min-height:2.7em;color:#f1ecfb}
+.dr-ket{font-size:12px;color:var(--redup);margin-top:2px}
+           
