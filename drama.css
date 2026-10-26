@@ -225,4 +225,15 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .dr-prog i{display:block;height:100%;background:#fff;border-radius:3px}
 .dr-nama{font-size:13px;font-weight:600;margin-top:7px;line-height:1.35;min-height:2.7em;color:#f1ecfb}
 .dr-ket{font-size:12px;color:var(--redup);margin-top:2px}
-           
+
+/* ===== TANDA AIR KECIL DI BAWAH BAGIKAN ===== */
+.ep-tanda{max-width:76px;margin-top:2px;text-align:center;font-size:8.5px;line-height:1.25;font-weight:700;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.8);word-break:break-all;pointer-events:none;user-select:none}
+.ep-tanda:empty{display:none}
+
+/* ===== OTP DAFTAR ===== */
+.otp-baris{display:flex;gap:8px;align-items:stretch;margin-top:10px}
+.otp-baris input{flex:1;min-width:0;letter-spacing:2px;margin-top:0!important}
+.otp-kirim{flex:none;width:auto!important;margin:0!important;padding:0 14px!important;white-space:nowrap;font-size:13px}
+.otp-kirim:disabled{opacity:.6}
+.otp-ket{font-size:12px;margin:6px 0 4px}
+
