@@ -15,11 +15,11 @@ const PENGATURAN = {
 
   episode: [
     {
-      judul: "PERISAI PANTANG MENYERAH",
+      judul: "AYAHKU TERNYATA BOS BESAR",
       deskripsi: "Deskripsi singkat episode 1",
       label: "TRENDING #1",
       durasi: "02:15",
-      video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/ssstik.io_1793026933527.mp4",
+      video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/ssstik.io_1792813786387.mp4",
       poster: "",
       smartlink: "https://uplcm.com/4/11563571"
     },
