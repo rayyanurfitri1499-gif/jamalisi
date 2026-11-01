@@ -8,7 +8,7 @@ const PENGATURAN = {
   smartlinkPlay: "https://uplcm.com/4/11563571",
   jumlahKlikPlay: 1,
 
-  // smartlink muncul lagi setiap sekian detik video berjalan (0 = mati)
+  
   jedaIklanDetik: 15,
 
   bukaTabBaru: false,
@@ -105,14 +105,14 @@ const PENGATURAN = {
       layar.style.backgroundImage = "";
       layar.classList.remove("ada-poster");
       video.removeAttribute("poster");
-      // tanpa poster: tampilkan gambar awal dari video
+      
       video.muted = true;
       video.preload = "auto";
       video.src = d.video + "#t=0.1";
       video.style.display = "block";
       video.style.opacity = "1";
       video.style.visibility = "visible";
-      // HP sering belum menggambar frame → putar sebentar tanpa suara lalu jeda
+      
       video.addEventListener("loadeddata", () => {
         if (layar.classList.contains("main")) return;
         video.play().then(() => {
@@ -123,10 +123,17 @@ const PENGATURAN = {
     tombolEp.forEach((b, k) => b.classList.toggle("aktif", k === i));
   }
 
+  
+  function tambahRiwayat(h) {
+    try { history.pushState(null, "", "#" + h); } catch (e) {}
+  }
+
   tombolEp.forEach((b, k) => {
     b.addEventListener("click", () => {
+      const lama = ep;
       tampilkanEpisode(k);
-      tulisHash("ep-" + k);
+      if (k !== lama) tambahRiwayat("ep-" + k);
+      else tulisHash("ep-" + k);
       buka(link(P.episode[k].smartlink));
     });
   });
@@ -143,7 +150,7 @@ const PENGATURAN = {
   function putarVideo(mulai) {
     const d = P.episode[ep];
     if (video.getAttribute("src") !== d.video) video.src = d.video;
-    // lanjut dari detik terakhir sebelum iklan
+    
     if (mulai > 0) {
       const lompat = () => { try { video.currentTime = mulai; } catch (e) {} };
       if (video.readyState >= 1) lompat();
@@ -164,7 +171,7 @@ const PENGATURAN = {
     });
   }
 
-  // ---------- iklan setiap jedaIklanDetik saat video berjalan ----------
+  
   let detikTonton = 0;
   let waktuTerakhir = 0;
   video.addEventListener("timeupdate", () => {
@@ -208,6 +215,15 @@ const PENGATURAN = {
       putarVideo(h.detik);
     }
   }
+
+  function ikutiRiwayat() {
+    const h = bacaHash();
+    if (h && h.jenis === "putar") { cekKembali(); return; }
+    const i = (h && P.episode[h.ep]) ? h.ep : 0;
+    if (i !== ep) tampilkanEpisode(i);
+  }
+  window.addEventListener("popstate", ikutiRiwayat);
+
   window.addEventListener("pageshow", cekKembali);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") cekKembali();
