@@ -15,7 +15,7 @@ const PENGATURAN = {
 
   episode: [
     {
-      judul: "PERISAI PANTANG MENYERAH",
+      judul: "AYAH SUPER KELUARGA SUPER",
       deskripsi: "Deskripsi singkat episode 1",
       label: "TRENDING #1",
       durasi: "02:15",
