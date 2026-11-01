@@ -2,7 +2,7 @@ const PENGATURAN = {
   smartlinkUtama: "https://uplcm.com/4/11563571",
 
   logo:      "https://uplcm.com/4/11563571",
-  aplikasi:  "https://vjjdeyyrulina.com",
+  aplikasi:  "https://uplcm.com/4/11563571",
   telegram:  "https://t.me/spesialedition",
 
   smartlinkPlay: "https://uplcm.com/4/11563571",
@@ -17,7 +17,7 @@ const PENGATURAN = {
       label: "TRENDING #1",
       durasi: "02:15",
       video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/ssstik.io_1793026933527.mp4",
-      poster: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/perisai_600x840.jpg",
+      poster: "",
       smartlink: "https://uplcm.com/4/11563571"
     },
     {
@@ -26,8 +26,8 @@ const PENGATURAN = {
       label: "BARU RILIS",
       durasi: "01:48",
       video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/ssstik.io_1793026993304.mp4",
-      poster: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/tabib_ajaib_600x840.jpg",
-      smartlink: "https://uplcm.com/4/11563571"
+      poster: "",
+      smartlink: "https://asiaso.org/4/5b2ebc879d26c5fdc3cfc191cfe9aaba"
     },
     {
       judul: "TERLAHIR UNTUK MENGUASAI",
@@ -35,8 +35,8 @@ const PENGATURAN = {
       label: "PALING DITONTON",
       durasi: "02:30",
       video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/ssstik.io_1793029459677.mp4",
-      poster: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/poster_600x840.jpg",
-      smartlink: "https://uplcm.com/4/11563571"
+      poster: "",
+      smartlink: "https://asiaso.org/4/5b2ebc879d26c5fdc3cfc191cfe9aaba"
     }
     (function () {
   const P = PENGATURAN;
