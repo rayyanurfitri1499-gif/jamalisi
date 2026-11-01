@@ -21,7 +21,7 @@ const PENGATURAN = {
       durasi: "02:15",
       video: "https://pub-90b5435915404f77b08fdbcb2b3ca36d.r2.dev/VID-20261025-WA0002.mp4",
       poster: "",
-      smartlink: "https://uplcm.com/4/11563571"
+      smartlink: "https://asiaso.org/4/5b2ebc879d26c5fdc3cfc191cfe9aaba"
     },
     {
       judul: "TABIB AJAIB",
