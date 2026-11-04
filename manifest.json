@@ -8,7 +8,15 @@
   "background_color": "#0b0714",
   "theme_color": "#0b0714",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "ikon-mask-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "ikon-mask-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Lanjut nonton", "url": "./?buka=lanjut", "icons": [{ "src": "pintas-lanjut.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Drama baru", "url": "./?buka=baru", "icons": [{ "src": "pintas-baru.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Beli VIP", "url": "./?buka=vip", "icons": [{ "src": "pintas-vip.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Cari drama", "url": "./?buka=cari", "icons": [{ "src": "pintas-cari.png", "sizes": "96x96", "type": "image/png" }] }
   ]
 }
