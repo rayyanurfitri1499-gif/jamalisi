@@ -1,4 +1,3 @@
-/* ===== SPESIAL EDITION: FITUR DRAMA ===== */
 (function () {
   const IKLAN_TIAP = 3;
   const PER_HAL = 20;
@@ -7,11 +6,12 @@
   const IK = {
     mata: '<svg viewBox="0 0 24 24"><path d="M12 5C5 5 1 12 1 12s4 7 11 7 11-7 11-7-4-7-11-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>',
     bintang: '<svg viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>',
-    bagi: '<svg viewBox="0 0 24 24"><path d="M18 16a3 3 0 0 0-2.4 1.2l-6.7-3.4a3 3 0 0 0 0-1.6l6.7-3.4A3 3 0 1 0 15 7l-6.7 3.4a3 3 0 1 0 0 3.2L15 17a3 3 0 1 0 3-1z"/></svg>',
+    bagi: '<svg viewBox="0 0 24 24"><path d="M13.5 3.6a.9.9 0 0 1 1.5-.7l7.4 7.1a1 1 0 0 1 0 1.4l-7.4 7.1a.9.9 0 0 1-1.5-.7v-3.6C8.4 14 4.9 15.8 2.4 20.3c-.3.5-1 .3-1-.3C2 13.2 6.3 8.3 13.5 7.4z"/></svg>',
     cari: '<svg class="ik" viewBox="0 0 24 24"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>',
     gembok: '<svg viewBox="0 0 24 24"><path d="M6 10V8a6 6 0 1 1 12 0v2h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1h1zm2 0h8V8a4 4 0 1 0-8 0v2z"/></svg>',
     daftar: '<svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>',
     play: '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+    suka: '<svg viewBox="0 0 24 24"><path d="M12 21.2 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5z"/></svg>',
     komen: '<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.4 1.2 4.6 3.1 6.1L4 22l4.6-2.5c1.1.3 2.2.5 3.4.5 5.5 0 10-3.8 10-8.5S17.5 3 12 3zM7.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm4.5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>'
   };
 
@@ -29,6 +29,10 @@
   const bolehVip = () => { try { return aktif(); } catch (e) { return false; } };
   const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(".", ",") + "jt" : n >= 1e3 ? (n / 1e3).toFixed(1).replace(".", ",") + "rb" : String(n || 0);
   const cariDrama = id => DRAMA.find(d => d.id === Number(id));
+  const sukaku = id => !!(window.SE_SUKA && window.SE_SUKA.has(Number(id)));
+  const tombolSuka = d => '<button data-suka="' + d.id + '" class="' + (sukaku(d.id) ? "on" : "") + '">' + IK.suka +
+    '<span data-jsuka="' + d.id + '">' + fmt(d.jml_suka || 0) + "</span></button>";
+  window.SE_aturSuka = (id, n) => { const d = cariDrama(id); if (d) d.jml_suka = n; };
   /* kunci putar: kode khusus video dari server, berlaku 6 jam, tidak bisa dipakai untuk login */
   let KUNCI = { t: "", exp: 0 };
   async function siapkanKunci(paksa) {
@@ -43,8 +47,6 @@
   setInterval(() => siapkanKunci(), 20 * 60000);
   const srcEp = epId => API + "/e/" + epId + (KUNCI.t ? "?t=" + encodeURIComponent(KUNCI.t) : "");
   const bolehEp = (d, no) => no <= (d.gratis || 0) || bolehVip();
-
-  /* ---------- matikan home lama (slider & thumbnail) supaya tidak berat ---------- */
   try {
     $$("#slider video").forEach(v => { v.pause(); v.removeAttribute("src"); v.load(); v.play = () => Promise.resolve(); });
     $("#slider").innerHTML = "";
@@ -52,8 +54,6 @@
     if (typeof thumbIO !== "undefined") thumbIO.disconnect();
     if (typeof antrianThumb !== "undefined") antrianThumb.length = 0;
   } catch (e) {}
-
-  /* ---------- iklan smartlink (hanya non-pelanggan) ---------- */
   function iklanMungkin() {
     try {
       if (typeof SMARTLINK !== "string" || !SMARTLINK || SMARTLINK.startsWith("ISI-")) return;
@@ -98,8 +98,6 @@
     toast(i > -1 ? "Dihapus dari favorit" : "Ditambahkan ke favorit");
     $$('[data-fav-drama="' + d.id + '"]').forEach(b => b.classList.toggle("on", i === -1));
   }
-
-  /* ======================= FEED ======================= */
   const feed = document.createElement("div");
   feed.id = "feed";
   feed.innerHTML =
@@ -133,7 +131,7 @@
       '<div class="fd-jeda">' + IK.play + "</div>" +
       (suara ? "" : '<div class="fd-suara">🔇 Ketuk untuk suara</div>') +
       '<div class="fd-sisi">' +
-      '<button tabindex="-1">' + IK.mata + fmt(d.ditonton) + "</button>" +
+      '<button tabindex="-1">' + IK.mata + fmt(d.ditonton) + "</button>" + tombolSuka(d) +
       '<button data-komen="' + d.id + '">' + IK.komen + '<span data-jkom="' + d.id + '">' + fmt(d.jml_komentar || 0) + "</span></button>" +
       '<button data-fav-drama="' + d.id + '" class="' + (fav.includes(d.id) ? "on" : "") + '">' + IK.bintang + "Favorit</button>" +
       '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button></div>" +
@@ -154,8 +152,6 @@
     v.addEventListener("ended", () => selesaiCuplikan(s._d));
     slideIO.observe(s);
   }
-
-  /* ganti = mulai dari drama yang berbeda dari terakhir kali (refresh, mahkota, tombol Home) */
   function renderFeed(ganti) {
     slideIO.disconnect();
     slides.forEach(s => lepasVideo(s.querySelector("video")));
@@ -177,8 +173,6 @@
     slides.forEach((s, i) => pasangSlide(s, urut[i]));
     list.scrollTop = 0;
   }
-
-  /* feed tidak pernah habis: kalau hampir sampai bawah, tambah drama lagi dengan urutan acak */
   function tambahFeed() {
     const calon = DRAMA.filter(x => x.gratis > 0 && x.ep1);
     if (!calon.length || !slides.length) return;
@@ -262,8 +256,7 @@
     if (v.paused) { s.classList.remove("jeda"); v.play().catch(() => {}); }
     else { s.classList.add("jeda"); v.pause(); }
   });
-
-  let tGerak;
+    let tGerak;
   list.addEventListener("scroll", () => {
     head.classList.add("redup");
     clearTimeout(tGerak);
@@ -340,6 +333,14 @@
     lanjutFeed();
   }
 
+  const SH_G = d => '<svg class="tm-ik" viewBox="0 0 24 24" aria-hidden="true">' + d + "</svg>";
+  const SH_IK = {
+    gem: SH_G('<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18M9 3l3 18 3-18"/>'),
+    cek: SH_G('<path d="m5 12 5 5 9-10"/>'),
+    film: SH_G('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/>'),
+    tanpa: SH_G('<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6 18.4 18.4"/>'),
+    bintang: SH_G('<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/>')
+  };
   function renderSheet() {
     const d = konteks && konteks.d;
     const p = PAKET.find(x => x.id === paketSheet) || PAKET[0];
@@ -347,15 +348,22 @@
     sheet.innerHTML =
       (d ? '<div class="sh-konteks"><b>' + esc(d.judul) + "</b><div>" +
         (konteks.epSelesai ? "Ep " + konteks.epSelesai + " selesai · " + sisa + " episode lagi" : d.jml_ep + " episode") + "</div></div>" : "") +
-      '<div class="sheet-isi"><div class="sh-head"><h3>🔒 ' + (d ? "Buka semua episode" : "Langganan VIP") + '</h3><button class="sh-x" aria-label="Tutup">✕</button></div>' +
-      (bolehVip() ? '<p class="muted" style="margin-top:6px">VIP kamu aktif sampai ' + tgl(SESI.user.vip_sampai) + ". Pilih paket untuk memperpanjang.</p>" : "") +
-      '<div class="sh-paket">' + PAKET.map(x =>
-        '<button class="sh-pk ' + (x.id === paketSheet ? "on" : "") + '" data-pk="' + x.id + '">' +
-        (x.id === "bulanan" ? "<i>Populer</i>" : "") + "<small>" + esc(x.nama) + "</small><b>" + rupiah(x.harga) + "</b></button>").join("") + "</div>" +
-      '<div class="sh-untung"><div><span>✓</span>Semua drama VIP terbuka</div><div><span>✓</span>Tanpa iklan</div><div><span>✓</span>Episode baru tiap hari</div></div>' +
+      '<div class="sheet-isi"><div class="sh-head"><span class="sh-tile">' + SH_IK.gem + '</span><div class="sh-judul"><h3>' + (d ? "Buka semua episode" : "Langganan VIP") + "</h3>" +
+      (bolehVip() ? '<div class="sh-aktif">' + SH_IK.cek + "Aktif sampai " + tgl(SESI.user.vip_sampai) + " · pilih paket buat perpanjang</div>" : "") +
+      '</div><button class="sh-x" aria-label="Tutup">✕</button></div>' +
+      '<div class="sh-paket">' + PAKET.map(x => {
+        const perHari = Math.round(x.harga / (x.hari || 1));
+        const hemat = Math.round((1 - perHari / PAKET[0].harga) * 100);
+        const pita = x.id === "bulanan" ? "Populer" : x.id === "tahunan" ? "Paling hemat" : "";
+        return '<button class="sh-pk ' + (x.id === paketSheet ? "on" : "") + '" data-pk="' + x.id + '">' +
+          (pita ? "<i>" + pita + "</i>" : "") + '<span class="sh-atas"><small>' + esc(x.nama) + '</small><span class="sh-rd"></span></span>' +
+          "<b>" + rupiah(x.harga) + '</b><span class="sh-lama">' + (x.hari || 1) + " hari</span>" +
+          '<span class="sh-kaki"><span>' + rupiah(perHari) + "/hari</span>" + (hemat > 0 ? "<em>Hemat " + hemat + "%</em>" : "") + "</span></button>";
+      }).join("") + "</div>" +
+      '<div class="sh-untung"><div><span>' + SH_IK.film + '</span>Semua drama VIP terbuka</div><div><span>' + SH_IK.tanpa + '</span>Tanpa iklan</div><div><span>' + SH_IK.bintang + "</span>Episode baru tiap hari</div></div>" +
       (SESI.user
-        ? '<button class="btn" id="sh-bayar">Lanjut nonton ' + rupiah(p.harga) + "</button>" +
-          '<div class="sh-cara">QRIS, e-wallet, VA bank · aktif otomatis setelah bayar</div>'
+        ? '<button class="btn" id="sh-bayar">Lanjut nonton ' + rupiah(p.harga) + "<small>Paket " + esc(p.nama) + " · " + (p.hari || 1) + " hari</small></button>" +
+          '<div class="sh-cara"><span>QRIS</span><span>e-wallet</span><span>VA bank</span><span class="ok">aktif otomatis setelah bayar</span></div>'
         : '<div class="sh-login"><p class="muted" style="margin-bottom:10px">Masuk dulu untuk berlangganan</p><div id="sh-gbtn"></div>' +
           '<a href="#" id="sh-email">Masuk atau daftar pakai email</a></div>') +
       "</div>";
@@ -369,7 +377,7 @@
         location.href = j.url;
       } catch (err) {
         toast(err.message);
-        bayar.disabled = false; bayar.textContent = "Lanjut nonton " + rupiah(p.harga);
+        bayar.disabled = false; bayar.innerHTML = "Lanjut nonton " + rupiah(p.harga) + "<small>Paket " + esc(p.nama) + " · " + (p.hari || 1) + " hari</small>";
       }
     };
     const email = $("#sh-email");
@@ -398,8 +406,6 @@
       if (halaman === "langganan") renderLangganan();
     };
   }
-
-  /* ======================= PEMUTAR EPISODE (GESER ATAS/BAWAH) ======================= */
   const pemutar = document.createElement("div");
   pemutar.id = "ep-player";
   pemutar.innerHTML =
@@ -424,14 +430,12 @@
   const epIOcb = es => {
     es.forEach(en => {
       if (!en.isIntersecting || en.intersectionRatio < 0.6) return;
-      if (en.target.dataset.lanjut || en.target.dataset.balik) return; /* pindah drama ditangani setelah geseran selesai */
+      if (en.target.dataset.lanjut || en.target.dataset.balik) return; 
       if (Date.now() < kunciGeser) return;
       aktifkanEp(Number(en.target.dataset.no));
     });
   };
   let epIO = new IntersectionObserver(epIOcb, { root: epList, threshold: [0.6] });
-
-  /* drama berikutnya setelah episode terakhir */
   function pilihBerikut(d) {
     const dilewati = rantai.map(x => x.id);
     let calon = DRAMA.filter(x => x.id !== d.id && !dilewati.includes(x.id) && x.gratis > 0 && x.ep1);
@@ -445,7 +449,6 @@
     const kumpulan = belum.length ? belum : calon;
     return kumpulan[Math.floor(Math.random() * kumpulan.length)];
   }
-  /* rantai drama yang ditonton berurutan di pemutar, supaya bisa scroll balik ke drama sebelumnya */
   let pindahDrama = false, rantai = [], posRantai = 0, kunciGeser = 0;
   function kartuPindah(teks) {
     const s = epSlides.find(x => x.dataset.lanjut || x.dataset.balik ? Math.abs(x.offsetTop - epList.scrollTop) < 5 : false);
@@ -486,8 +489,8 @@
     const r = rantai.map(x => ({ ...x }));
     if (r[posRantai]) r[posRantai].no = putarNo;
     pindahKe(n, sbl.no, r, posRantai - 1);
-  }
-  /* cek ulang posisi setelah scroll berhenti, supaya kartu pindah drama tidak pernah macet */
+        }
+    /* cek ulang posisi setelah scroll berhenti, supaya kartu pindah drama tidak pernah macet */
   let jariTurun = false;
   function cekKartuPindah() {
     if (!pemutar.classList.contains("buka") || pindahDrama || jariTurun) return;
@@ -535,7 +538,7 @@
             '<div class="ep-kunci-isi"><div class="ep-gembok">' + IK.gembok + '</div><b>Episode ' + e.no + ' khusus VIP</b>' +
             '<span>Langganan untuk lanjut nonton semua episode</span><button class="btn" data-buka="' + e.no + '">Buka semua episode</button></div>'
           : '<video playsinline preload="none"></video><div class="fd-jeda">' + IK.play + "</div>") +
-        '<div class="fd-sisi">' +
+        '<div class="fd-sisi">' + tombolSuka(d) +
         '<button data-komen="' + d.id + '">' + IK.komen + '<span data-jkom="' + d.id + '">' + fmt(d.jml_komentar || 0) + "</span></button>" +
         '<button data-fav-drama="' + d.id + '" class="' + (fav ? "on" : "") + '">' + IK.bintang + "Favorit</button>" +
         '<button data-bagi="' + d.id + '">' + IK.bagi + "Bagikan</button><div class=\"ep-tanda\"></div></div>" +
@@ -557,7 +560,8 @@
       if (v) {
         v.addEventListener("loadedmetadata", () => v.classList.toggle("lebar", v.videoWidth > v.videoHeight));
         v.addEventListener("timeupdate", () => { if (v.duration) s.querySelector(".fd-muat i").style.width = (v.currentTime / v.duration * 100) + "%"; });
-        v.addEventListener("ended", () => keEpisode(Number(s.dataset.no) + 1, true));
+        v.addEventListener("ended", () => mundurLanjut(s, Number(s.dataset.no) + 1));
+        v.addEventListener("play", batalMundur);
         v.addEventListener("error", () => { if (v.getAttribute("src") && pemutar.classList.contains("buka")) toast("Video gagal diputar. Coba lagi sebentar."); });
       }
       epIO.observe(s);
@@ -571,8 +575,56 @@
     epList.scrollTo({ top: s.offsetTop, behavior: otomatis ? "smooth" : "auto" });
   }
 
+  /* hitung mundur ke episode berikutnya */
+  let mundurT = null;
+  function batalMundur() {
+    if (mundurT) { clearInterval(mundurT); mundurT = null; }
+    $$(".ep-mundur").forEach(x => x.remove());
+  }
+  function mundurLanjut(s, no) {
+    batalMundur();
+    const brk = epSlides.find(x => Number(x.dataset.no) === no);
+    if (!brk || brk.classList.contains("terkunci") || !putarD) return keEpisode(no, true);
+    const d = putarD;
+    let n = 5;
+    const el = document.createElement("div");
+    el.className = "ep-mundur";
+    el.innerHTML = '<button class="ep-mundur-batal" type="button">Batal</button>' +
+      '<div class="ep-mundur-kartu"><div class="ep-mundur-sampul"' + (d.sampul ? ' style="background-image:url(\'' + esc(d.sampul) + '\')"' : "") + "><span>Ep " + no + "</span></div>" +
+      '<div class="ep-mundur-teks"><small>BERIKUTNYA</small><b>Episode ' + no + "</b><span>Ketuk buat langsung putar</span></div>" +
+      '<div class="ep-mundur-cincin"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19"/><circle class="jalan" cx="22" cy="22" r="19"/></svg><b>5</b></div></div>';
+    s.appendChild(el);
+    const lanjut = () => { batalMundur(); keEpisode(no, true); };
+    el.querySelector(".ep-mundur-kartu").onclick = e => { e.stopPropagation(); lanjut(); };
+    el.querySelector(".ep-mundur-batal").onclick = e => { e.stopPropagation(); batalMundur(); };
+    el.addEventListener("touchstart", e => e.stopPropagation(), { passive: true });
+    mundurT = setInterval(() => {
+      n--;
+      const b = el.querySelector(".ep-mundur-cincin b");
+      if (b) b.textContent = Math.max(n, 0);
+      if (n <= 0) lanjut();
+    }, 1000);
+  }
+
+  /* kontrol di layar kunci & notifikasi pemutar */
+  function aturLayarKunci(d, no, v) {
+    if (!("mediaSession" in navigator) || typeof MediaMetadata === "undefined") return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Ep " + no + " · " + d.judul, artist: "Spesial Edition",
+        artwork: [{ src: d.sampul || "ikon-512.png", sizes: "512x512" }]
+      });
+      const ms = navigator.mediaSession;
+      ms.setActionHandler("play", () => v.play().catch(() => {}));
+      ms.setActionHandler("pause", () => v.pause());
+      ms.setActionHandler("nexttrack", () => keEpisode(epAktif + 1, true));
+      ms.setActionHandler("previoustrack", epAktif > 1 ? () => keEpisode(epAktif - 1) : null);
+    } catch (e) {}
+  }
+
   function aktifkanEp(no) {
     if (no === epAktif || !putarD) return;
+    batalMundur();
     epAktif = no;
     putarNo = no;
     const d = putarD;
@@ -585,6 +637,7 @@
         s.classList.remove("jeda");
         v.muted = false;
         if (pemutar.classList.contains("buka") && !document.hidden) v.play().catch(() => {});
+        if (!s.classList.contains("terkunci")) aturLayarKunci(d, no, v);
       } else if (n === no + 1) {
         if (!v.getAttribute("src")) { v.preload = "metadata"; v.src = srcEp(s.dataset.ep); }
         v.pause();
@@ -624,7 +677,6 @@
     pemutar.classList.add("buka");
     epAktif = -1;
     kunciGeser = Date.now() + 900;
-    /* hentikan sisa geseran jari & snap lama, lalu lompat tepat ke episode tujuan */
     epList.style.overflowY = "hidden";
     epList.style.scrollSnapType = "none";
     const lompat = () => {
@@ -677,8 +729,6 @@
     else { s.classList.add("jeda"); v.pause(); }
   });
   $("#ep-tutup").onclick = tutupPemutar;
-
-  /* ======================= DAFTAR EPISODE (LEMBAR BAWAH) ======================= */
   const daftarEp = document.createElement("div");
   daftarEp.id = "eplist-sheet";
   daftarEp.className = "sheet";
@@ -716,8 +766,7 @@
     });
   }
   daftarEp.addEventListener("click", e => { if (e.target === daftarEp) daftarEp.classList.remove("buka"); });
-
-  /* ======================= KOMENTAR ======================= */
+    /* ======================= KOMENTAR ======================= */
   const komen = document.createElement("div");
   komen.id = "komen-sheet";
   komen.className = "sheet";
@@ -915,8 +964,6 @@
     if (fv && !e.target.closest("#feed") && !e.target.closest("#ep-player")) { toggleFav(cariDrama(fv.dataset.favDrama)); return; }
     if (e.target.closest("[data-perpanjang]")) bukaSheet(null);
   });
-
-  /* ======================= CARI ======================= */
   const cari = document.createElement("div");
   cari.id = "cari-drama";
   cari.innerHTML = '<div class="cr-atas"><input id="cr-input" type="search" placeholder="Cari judul drama..."><button id="cr-tutup">Batal</button></div><div id="cr-hasil"></div>';
@@ -945,7 +992,6 @@
     bukaDetail(b.dataset.cari);
   });
 
-  /* ======================= AKTIVITAS ======================= */
   const renderAktivitasAsli = renderAktivitas;
   renderAktivitas = function () {
     renderAktivitasAsli();
@@ -964,8 +1010,6 @@
       (fav.length ? '<div class="lanjut-list">' + fav.map(kartuDrama).join("") + "</div>" : '<p class="kosong">Belum ada drama favorit.</p>');
     el.insertBefore(blok, el.firstChild);
   };
-
-  /* ======================= FOTO PROFIL DI AKUN ======================= */
   function kecilkanFoto(file) {
     return new Promise((ok, gagal) => {
       const img = new Image();
@@ -1002,7 +1046,6 @@
     };
   };
   if (halaman === "akun") renderAkun();
-    /* ======================= OTP SAAT DAFTAR ======================= */
   let otpMundur = 0, otpTimer = null;
   function aturTombolOtp() {
     const b = $("#otp-kirim");
@@ -1063,7 +1106,6 @@
   }
   if (halaman === "akun") renderAkun();
 
-  /* ======================= NAVIGASI ======================= */
   function aturMode() {
     const home = halaman === "home";
     document.body.classList.toggle("mode-feed", home);
@@ -1089,7 +1131,6 @@
     cariLama.addEventListener("focus", e => { e.target.blur(); bukaCari(); });
   }
 
-  /* ======================= CEGAH LAYAR DIPERBESAR (ZOOM) ======================= */
   document.addEventListener("touchmove", e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
   ["gesturestart", "gesturechange", "gestureend"].forEach(n => document.addEventListener(n, e => e.preventDefault(), { passive: false }));
   (function pasangViewport() {
@@ -1098,7 +1139,6 @@
     m.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover";
   })();
 
-  /* ======================= CEGAH TEKAN LAMA (DOWNLOAD VIDEO) ======================= */
   document.addEventListener("contextmenu", e => {
     if (e.target.closest && e.target.closest("video, #feed, #ep-player")) e.preventDefault();
   }, true);
@@ -1111,7 +1151,6 @@
     });
   }).observe(document.body, { childList: true, subtree: true });
 
-  /* ======================= TOMBOL KEMBALI BERTAHAP ======================= */
   let adaPenjaga = false, waktuKeluar = 0;
   function pasangPenjaga() {
     if (adaPenjaga) return;
@@ -1137,7 +1176,6 @@
     pasangPenjaga();
   });
 
-  /* ======================= MULAI ======================= */
   async function muatDrama() {
     try {
       const r = await fetch(API + "/api/drama");
@@ -1160,14 +1198,27 @@
       bukaDetail(idBagi);
     } else if (halaman === "langganan") renderLangganan();
     if (halaman === "aktivitas") renderAktivitas();
+    bukaJalanPintas(q.get("buka"));
+  }
+
+  function bukaJalanPintas(b) {
+    if (!b) return;
+    history.replaceState(null, "", location.pathname);
+    if (b === "vip") return pindah("langganan");
+    if (b === "cari") return bukaCari();
+    if (b === "baru") { const t = $('.fd-tab button[data-tab="baru"]', feed); if (t) t.click(); return; }
+    if (b === "lanjut") {
+      const pr = progres(), wkt = sk("se_progres_waktu", {});
+      const id = Object.keys(pr).filter(k => cariDrama(k)).sort((a, c) => (wkt[c] || 0) - (wkt[a] || 0))[0];
+      if (id) bukaEpisode(cariDrama(id), pr[id] || 1);
+      else pindah("aktivitas");
+    }
   }
 
   aturMode();
   siapkanKunci();
   muatDrama();
 })();
-
-/* ===== NOTIF INSTALL APLIKASI (VERSI BARU) ===== */
 (function () {
   const ua = navigator.userAgent;
   const hp = /android|iphone|ipad|ipod/i.test(ua);
@@ -1190,8 +1241,7 @@
 
   function tampil() { if (!terpasang()) bar.classList.add("buka"); }
   function sembunyi() { bar.classList.remove("buka"); }
-
-  async function pasang() {
+    async function pasang() {
     if (ajakan) {
       ajakan.prompt();
       const hasil = await ajakan.userChoice.catch(() => ({}));
@@ -1228,7 +1278,6 @@
     if (halaman === "akun") renderAkun();
   }
 })();
-/* ===== FEED TANPA GAMBAR SAMPUL ===== */
 (function () {
   const list = document.getElementById("fd-list");
   if (!list) return;
@@ -1236,28 +1285,30 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-/* ===== ANIMASI PEMBUKA (hanya saat dibuka dari ikon aplikasi) ===== */
 (function () {
   const root = document.documentElement;
   const selesai = () => root.classList.add("sp-sudah");
-  const standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
-  let sudah = false;
-  try { sudah = sessionStorage.getItem("sp-buka") === "1"; sessionStorage.setItem("sp-buka", "1"); } catch (e) {}
-  if (!standalone || sudah) { selesai(); return; }
+  const mm = q => !!(window.matchMedia && matchMedia(q).matches);
+  const aplikasi = mm("(display-mode: standalone)") || mm("(display-mode: fullscreen)") || mm("(display-mode: minimal-ui)") || navigator.standalone === true;
+  const paksa = /[?&]sp=1/.test(location.search);         
+  let muatUlang = false;
+  try { const n = performance.getEntriesByType("navigation")[0]; muatUlang = !!n && n.type === "reload"; } catch (e) {}
+  if (!paksa && (!aplikasi || muatUlang)) { selesai(); return; }
 
   const box = document.createElement("div");
   box.id = "sp-buka";
   box.innerHTML =
     '<div class="sp-rays"></div><canvas></canvas>' +
     '<div class="sp-ring"></div><div class="sp-ring r2"></div>' +
-    '<div class="sp-logo"><img alt="" src="logo-buka.png"></div>' +
+    '<div class="sp-logo"><img class="sp-cincin" alt="" src="pusaran-cincin.png"><img class="sp-tengah" alt="" src="pusaran-tengah.png"></div>' +
     '<div class="sp-judul"><div class="sp-kata">' +
-    "DRAMA".split("").map((c, i) => '<span style="--i:' + i + '" data-c="' + c + '">' + c + '</span>').join("") +
+    "SPESIAL".split("").map((c, i) => '<span style="--i:' + i + '" data-c="' + c + '">' + c + '</span>').join("") +
     '<div class="sp-flare"></div><div class="sp-aura"></div><div class="sp-orbit"></div><div class="sp-orbit o2"></div></div>' +
+    '<div class="sp-edisi">' + "EDITION".split("").map((c, i) => '<span style="--j:' + i + '">' + c + '</span>').join("") + '</div>' +
     '<div class="sp-garis"><i></i><b></b><i></i></div><div class="sp-sub">NONTON TANPA BATAS</div></div>' +
     '<div class="sp-flash"></div><div class="sp-bar t"></div><div class="sp-bar u"></div>';
-  const img = box.querySelector("img");
-  img.onerror = () => { img.onerror = null; img.src = "icon-512.png"; };
+  const img = box.querySelector(".sp-cincin");
+  img.onerror = () => { img.onerror = null; box.querySelector(".sp-logo").innerHTML = '<img alt="" src="icon-512.png" style="width:60%;margin:0 auto;border-radius:50%">'; };
   document.body.appendChild(box);
   selesai();
 
@@ -1283,7 +1334,7 @@
   };
   const percik = (x, y, n) => { for (let i = 0; i < n; i++) { const a = acak(0, 6.283), v = acak(1.5, 6); P.push({ k: 1, x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 1, s: acak(.8, 2.2), l: 1 }); } };
   const petir = (x1, y1, x2, y2, w) => {
-    ctx.strokeStyle = "rgba(255,240,190,.95)"; ctx.shadowColor = "#f4c04a"; ctx.shadowBlur = 12; ctx.lineWidth = w;
+    ctx.strokeStyle = "rgba(255,225,245,.95)"; ctx.shadowColor = "#ff4f9a"; ctx.shadowBlur = 12; ctx.lineWidth = w;
     ctx.beginPath(); ctx.moveTo(x1, y1);
     for (let i = 1; i <= 8; i++) { const t = i / 8; ctx.lineTo(x1 + (x2 - x1) * t + (i < 8 ? acak(-9, 9) : 0), y1 + (y2 - y1) * t + (i < 8 ? acak(-9, 9) : 0)); }
     ctx.stroke(); ctx.shadowBlur = 0;
@@ -1295,13 +1346,13 @@
     if (e < 1) {
       for (let i = 0; i < 6; i++) hisap();
       const rr = R() * 0.35 * e + 4, g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr);
-      g.addColorStop(0, "rgba(255,231,163," + (0.9 * e) + ")"); g.addColorStop(1, "rgba(244,192,74,0)");
+      g.addColorStop(0, "rgba(255,194,224," + (0.9 * e) + ")"); g.addColorStop(1, "rgba(255,79,154,0)");
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 7); ctx.fill();
     }
     if (e >= 1 && !meledak) { meledak = true; P = P.filter(p => p.k !== 0); ledak(); }
-    if (e > 1.3 && e < 3.3 && Math.random() < 0.5) bara();
+    if (e > 1.3 && e < 3.7 && Math.random() < 0.5) bara();
     for (let h = 0; h < huruf.length; h++) if (!sudahH[h] && e >= 1.65 + h * 0.08) { sudahH[h] = 1; percik(huruf[h].x, huruf[h].y, 22); }
-    if (e > 2.1 && e < 3.2 && huruf.length && Math.random() < 0.18) {
+    if (e > 2.1 && e < 3.6 && huruf.length && Math.random() < 0.18) {
       const A = huruf[0], Z = huruf[huruf.length - 1];
       petir(A.x - 30, A.y + acak(-25, 25), Z.x + 30, Z.y + acak(-25, 25), acak(1, 2.2));
     }
@@ -1310,18 +1361,18 @@
       if (p.k === 0) {
         p.r -= p.v * (1 + (R() * 0.95 - p.r) / 60);
         if (p.r < 6) { P.splice(j, 1); continue; }
-        ctx.strokeStyle = "rgba(255,214,120,.85)"; ctx.lineWidth = p.s; ctx.beginPath();
+        ctx.strokeStyle = "rgba(255,150,205,.85)"; ctx.lineWidth = p.s; ctx.beginPath();
         ctx.moveTo(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r);
         ctx.lineTo(cx + Math.cos(p.a) * (p.r + 14), cy + Math.sin(p.a) * (p.r + 14)); ctx.stroke();
       } else if (p.k === 1) {
         p.x += p.vx; p.y += p.vy; p.vx *= .95; p.vy = p.vy * .95 + .06; p.l -= .016;
         if (p.l <= 0) { P.splice(j, 1); continue; }
-        ctx.fillStyle = "rgba(255," + (180 + Math.random() * 60 | 0) + ",90," + p.l + ")";
+        ctx.fillStyle = "rgba(255," + (90 + Math.random() * 80 | 0) + ",210," + p.l + ")";
         ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 7); ctx.fill();
       } else {
         p.y -= p.vy; p.f += .05; p.x += p.vx + Math.sin(p.f) * .3; p.l -= .004;
         if (p.l <= 0 || p.y < -5) { P.splice(j, 1); continue; }
-        ctx.fillStyle = "rgba(255,170,60," + (p.l * .8) + ")";
+        ctx.fillStyle = "rgba(200,120,255," + (p.l * .8) + ")";
         ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 7); ctx.fill();
       }
     }
@@ -1340,7 +1391,350 @@
   posHuruf();
   const pelan = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!pelan) raf = requestAnimationFrame(t => { t0 = t; gambar(t); });
-  setTimeout(akhiri, pelan ? 900 : 3300);
-  box.addEventListener("click", akhiri);            // ketuk = lewati
-  setTimeout(akhiri, 6000);                          // pengaman
+  setTimeout(akhiri, pelan ? 900 : 3800);
+  box.addEventListener("click", akhiri);       
+  setTimeout(akhiri, 6500);                          
+})();
+(function () {
+  const $ = (s, r) => (r || document).querySelector(s);
+  const garis = d => '<svg class="tm-ik" viewBox="0 0 24 24" aria-hidden="true">' + d + "</svg>";
+  const IKON = {
+    gem: garis('<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18M9 3l3 18 3-18"/>'),
+    api: garis('<path d="M12 3s5 4.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 1.5-4s.5 2.5 2.5 3c0-4 1-7 1-9z"/>'),
+    cek: garis('<path d="m5 12 5 5 9-10"/>'),
+    jam: garis('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    bintang: garis('<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/>'),
+    struk: garis('<path d="M5 3h14v18l-2.3-1.5-2.4 1.5-2.3-1.5-2.3 1.5-2.4-1.5L5 21z"/><path d="M9 8h6M9 12h6M9 16h4"/>'),
+    putar: garis('<rect x="3" y="3" width="18" height="18" rx="4"/><path d="m10 8.5 5 3.5-5 3.5z"/>'),
+    play: garis('<path d="M7 5v14l11-7z"/>'),
+    bisu: garis('<path d="M4 9v6h4l5 4V5L8 9z"/><path d="m16.5 9.5 5 5m0-5-5 5"/>'),
+    gembok: garis('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
+    pin: garis('<path d="M9 3h6l-1 6 3 3H7l3-3z"/><path d="M12 12v9"/>'),
+    kamera: garis('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+    unduh: garis('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>'),
+    film: garis('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M17 9h4M3 15h4M17 15h4"/>'),
+    chat: garis('<path d="M4 5h16v11H9l-5 4z"/>'),
+    sampah: garis('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'),
+    keluar: garis('<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'),
+    panah: garis('<path d="m9 6 6 6-6 6"/>')
+  };
+  const PETA = {
+    "👑": "gem", "🔥": "api", "💎": "gem", "✅": "cek", "🕘": "jam", "⭐": "bintang", "🧾": "struk",
+    "▶️": "putar", "▶": "play", "🔇": "bisu", "🔒": "gembok", "📌": "pin", "📷": "kamera", "📲": "unduh", "🎬": "film", "🎉": ""
+  };
+  const POLA = /(▶️|👑|🔥|💎|✅|🕘|⭐|🧾|▶|🔇|🔒|📌|📷|📲|🎬|🎉)\s?/;
+  const POLA_G = new RegExp(POLA.source, "g");
+  const LEWAT = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, OPTION: 1 };
+
+  function gantiTeks(t) {
+    const p = t.parentNode;
+    if (!p || LEWAT[p.nodeName] || !POLA.test(t.nodeValue)) return;
+    if (p.classList && p.classList.contains("crown")) {
+      p.innerHTML = '<img class="crown-img" alt="" src="ikon-192.png">';
+      return;
+    }
+    const f = document.createDocumentFragment();
+    let sisa = t.nodeValue, m;
+    POLA_G.lastIndex = 0;
+    let awal = 0;
+    while ((m = POLA_G.exec(sisa))) {
+      if (m.index > awal) f.appendChild(document.createTextNode(sisa.slice(awal, m.index)));
+      const nama = PETA[m[1]];
+      if (nama) {
+        const s = document.createElement("span");
+        s.className = "tm-wadah";
+        s.innerHTML = IKON[nama];
+        f.appendChild(s);
+      }
+      awal = m.index + m[0].length;
+    }
+    if (awal < sisa.length) f.appendChild(document.createTextNode(sisa.slice(awal)));
+    p.replaceChild(f, t);
+  }
+  function sapu(akar) {
+    if (!akar) return;
+    if (akar.nodeType === 3) return gantiTeks(akar);
+    if (akar.nodeType !== 1 || LEWAT[akar.nodeName]) return;
+    const w = document.createTreeWalker(akar, NodeFilter.SHOW_TEXT);
+    const kumpul = [];
+    while (w.nextNode()) if (POLA.test(w.currentNode.nodeValue)) kumpul.push(w.currentNode);
+    kumpul.forEach(gantiTeks);
+  }
+  sapu(document.body);
+  new MutationObserver(ms => ms.forEach(m => {
+    if (m.type === "characterData") gantiTeks(m.target);
+    else m.addedNodes.forEach(sapu);
+  })).observe(document.body, { childList: true, subtree: true, characterData: true });
+  function bukaChat() {
+    const b = $("#btn-chat");
+    if (b) b.click();
+  }
+  function baris(ikon, teks, ekstra) {
+    return '<span class="ak-ik">' + IKON[ikon] + '</span><span class="ak-tx">' + teks + "</span>" + (ekstra || "") +
+      '<span class="ak-pn">' + IKON.panah + "</span>";
+  }
+  if (typeof renderAkun === "function") {
+    const renderAkunSblm = renderAkun;
+    renderAkun = function () {
+      renderAkunSblm();
+      const el = $("#page-akun");
+      if (!el) return;
+      const menu = $(".menu-akun", el);
+      if (!menu) {
+        if (!$("#ak-chat-tamu", el)) {
+          const b = document.createElement("button");
+          b.id = "ak-chat-tamu";
+          b.className = "ak-row ak-tamu";
+          b.innerHTML = baris("chat", "Live Chat", '<em class="ak-on">Online</em>');
+          b.onclick = bukaChat;
+          el.appendChild(b);
+        }
+        return;
+      }
+      menu.classList.add("ak-menu");
+      const chat = document.createElement("button");
+      chat.className = "ak-row";
+      chat.innerHTML = baris("chat", "Live Chat", '<em class="ak-on">Online</em>');
+      chat.onclick = bukaChat;
+      menu.insertBefore(chat, menu.firstChild);
+      const susun = [["#b-lang", "gem", "Kelola Langganan"], ["#akun-pasang", "unduh", "Install aplikasi"],
+        ["#b-hapus", "sampah", "Hapus Riwayat Tonton"], ["#b-keluar", "keluar", "Keluar"]];
+      susun.forEach(([sel, ik, teks]) => {
+        const b = $(sel, el);
+        if (!b) return;
+        b.className = "ak-row" + (sel === "#b-keluar" ? " ak-merah" : "");
+        b.innerHTML = baris(ik, teks);
+        menu.appendChild(b);
+      });
+    };
+    if (typeof halaman !== "undefined" && halaman === "akun") renderAkun();
+  }
+})();
+(function () {
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+  const garis = d => '<svg class="tm-ik" viewBox="0 0 24 24" aria-hidden="true">' + d + "</svg>";
+  const IK = {
+    kal: garis('<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+    lonceng: garis('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 20a2 2 0 0 0 3.4 0"/>'),
+    hp: garis('<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/>'),
+    cek: garis('<path d="m5 12 5 5 9-10"/>'),
+    gem: garis('<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18"/>'),
+    kado: garis('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8c-2-4-6-4-6-1.5S10 8 12 8zm0 0c2-4 6-4 6-1.5S14 8 12 8z"/>'),
+    panah: garis('<path d="m9 6 6 6-6 6"/>')
+  };
+  const masuk = () => typeof SESI !== "undefined" && !!SESI.user;
+  const getar = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
+  const fmtN = n => (typeof fmt === "function" ? fmt(n) : String(n));
+  document.addEventListener("click", e => {
+    if (e.target.closest("[data-suka]")) return;
+    if (e.target.closest("button, .fd-semua, .ak-row, .sh-pk, .ep-btn, a.btn")) getar(8);
+  }, true);
+  const hapusBadge = () => { try { navigator.clearAppBadge && navigator.clearAppBadge(); } catch (e) {} };
+  hapusBadge();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) hapusBadge(); });
+  window.SE_SUKA = new Set();
+  const segarSukaTombol = () => $$("[data-suka]").forEach(b => b.classList.toggle("on", window.SE_SUKA.has(Number(b.dataset.suka))));
+  async function muatSuka() {
+    window.SE_SUKA = new Set();
+    if (masuk()) { try { const j = await panggil("/api/suka/saya"); window.SE_SUKA = new Set(j.ids || []); } catch (e) {} }
+    segarSukaTombol();
+  }
+  document.addEventListener("click", async e => {
+    const b = e.target.closest("[data-suka]");
+    if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    if (!masuk()) { toast("Masuk dulu buat kasih suka"); return; }
+    const id = Number(b.dataset.suka), jadi = !window.SE_SUKA.has(id);
+    const span = $("[data-jsuka='" + id + "']");
+    const lama = span ? Number(span.dataset.n || 0) : 0;
+    jadi ? window.SE_SUKA.add(id) : window.SE_SUKA.delete(id);
+    segarSukaTombol();
+    $$("[data-suka='" + id + "']").forEach(x => { x.classList.remove("pop"); void x.offsetWidth; x.classList.add("pop"); });
+    getar(jadi ? [12, 30, 12] : 8);
+    try {
+      const j = await panggil("/api/suka", { id });
+      j.suka ? window.SE_SUKA.add(id) : window.SE_SUKA.delete(id);
+      $$("[data-jsuka='" + id + "']").forEach(x => { x.textContent = fmtN(j.jml); x.dataset.n = j.jml; });
+      if (window.SE_aturSuka) window.SE_aturSuka(id, j.jml);
+    } catch (err) {
+      jadi ? window.SE_SUKA.delete(id) : window.SE_SUKA.add(id);
+      toast(err.message);
+    }
+    segarSukaTombol();
+  }, true);
+  new MutationObserver(() => {
+    $$("[data-suka]:not([data-siap])").forEach(b => { b.dataset.siap = "1"; b.classList.toggle("on", window.SE_SUKA.has(Number(b.dataset.suka))); });
+  }).observe(document.body, { childList: true, subtree: true });
+  const halAbsen = document.createElement("section");
+  halAbsen.id = "page-absen";
+  halAbsen.className = "page";
+  const main = $("main");
+  if (main) main.appendChild(halAbsen);
+  const nav = $(".bottom");
+  if (nav && !$('[data-page="absen"]', nav)) {
+    const b = document.createElement("button");
+    b.dataset.page = "absen";
+    b.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 2h2v2h6V2h2v2h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2zm-2 7v11h14V9zm3 3h3v3H8z"/></svg>Absen';
+    b.onclick = () => pindah("absen");
+    nav.insertBefore(b, $('[data-page="aktivitas"]', nav) || $('[data-page="akun"]', nav));
+  }
+  let ABSEN = null;
+  async function renderAbsen() {
+    const el = halAbsen;
+    if (!masuk()) {
+      el.innerHTML = '<div class="ab-kosong">' + IK.kado + "<b>Absen Harian</b><p>Masuk dulu buat ambil koin harian dan VIP gratis di hari ke-7.</p>" +
+        '<button class="btn" id="ab-masuk">Masuk / Daftar</button></div>';
+      $("#ab-masuk").onclick = () => pindah("akun");
+      return;
+    }
+    if (!ABSEN) el.innerHTML = '<p class="kosong">Memuat absen...</p>';
+    try { ABSEN = await panggil("/api/absen"); } catch (e) { el.innerHTML = '<p class="kosong">' + e.message + "</p>"; return; }
+    const a = ABSEN;
+    const kotak = a.hadiah.map((h, i) => {
+      const n = i + 1, ok = n <= a.hari, kini = !a.sudah && n === a.hari + 1;
+      const isi = h === "vip" ? IK.gem + "<b>VIP 1 hari</b>" : (ok ? IK.cek : '<span class="koin">S</span>') + "<b>" + h + "</b>";
+      return '<div class="ab-h' + (ok ? " ok" : "") + (kini ? " kini" : "") + (h === "vip" ? " ab-vip" : "") + '"><small>Hari ' + n + "</small>" + isi + "</div>";
+    }).join("");
+    const besok = a.hadiah[a.hari % 7];
+    el.innerHTML =
+      '<div class="sec-head"><h2>' + IK.kado + 'Absen Harian</h2><span class="ab-saldo"><span class="koin">S</span>' + a.koin + " koin</span></div>" +
+      '<div class="ab-kartu"><p>Absen 7 hari berturut-turut, hari ke-7 dapat VIP 1 hari gratis. Bolong sehari, mulai lagi dari hari 1.</p>' +
+      '<div class="ab-grid">' + kotak + "</div>" +
+      (a.sudah ? '<button class="btn" disabled>Sudah absen hari ini · balik lagi besok</button>'
+        : '<button class="btn" id="ab-ambil">' + (besok === "vip" ? "Ambil VIP 1 hari gratis" : "Ambil " + besok + " koin hari ini") + "</button>") + "</div>" +
+      '<div class="sec-head"><h2>' + IK.gem + "Tukar Koin</h2></div>" +
+      Object.keys(a.tukar).map(k => {
+        const t = a.tukar[k];
+        return '<div class="ab-tukar"><div><b>' + t.nama + '</b><small><span class="koin">S</span>' + t.harga + ' koin</small></div>' +
+          '<button data-tukar="' + k + '"' + (a.koin < t.harga ? " disabled" : "") + ">Tukar</button></div>";
+      }).join("");
+    const amb = $("#ab-ambil");
+    if (amb) amb.onclick = async () => {
+      amb.disabled = true;
+      try {
+        const j = await panggil("/api/absen/ambil", {});
+        if (j.user) setSesi(SESI.token, j.user);
+        getar([15, 40, 15]);
+        toast(j.dapat === "vip" ? "Selamat! VIP 1 hari aktif" : "+" + j.dapat + " koin");
+        ABSEN = j; renderAbsen();
+      } catch (e) { toast(e.message); amb.disabled = false; }
+    };
+    $$("[data-tukar]", el).forEach(b => b.onclick = async () => {
+      b.disabled = true;
+      try {
+        const j = await panggil("/api/absen/tukar", { item: b.dataset.tukar });
+        if (j.user) setSesi(SESI.token, j.user);
+        toast("Berhasil, VIP kamu bertambah");
+        ABSEN = j; renderAbsen();
+      } catch (e) { toast(e.message); b.disabled = false; }
+    });
+  }
+  if (typeof pindah === "function") {
+    const pindahSblm = pindah;
+    pindah = function (n) {
+      pindahSblm(n);
+      if (n === "absen") renderAbsen();
+    };
+  }
+  const API_URL = typeof API !== "undefined" ? API : "https://vjjdeyyjinerila.xyz";
+  const bisaNotif = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const kunciUint8 = b => { const p = "=".repeat((4 - b.length % 4) % 4); const r = atob((b + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+  async function langgananNotif() {
+    if (!bisaNotif()) return null;
+    const reg = await navigator.serviceWorker.ready;
+    return reg.pushManager.getSubscription();
+  }
+  async function nyalakanNotif() {
+    if (!bisaNotif()) throw new Error("HP ini belum mendukung notifikasi. Pasang aplikasinya dulu dari Chrome.");
+    const izin = await Notification.requestPermission();
+    if (izin !== "granted") throw new Error("Izin notifikasi ditolak. Buka pengaturan aplikasi buat mengizinkan.");
+    const reg = await navigator.serviceWorker.ready;
+    const k = await panggil("/api/notif/kunci");
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: kunciUint8(k.kunci) });
+    await panggil("/api/notif/daftar", { sub: sub.toJSON() });
+  }
+  async function matikanNotif() {
+    const sub = await langgananNotif();
+    if (!sub) return;
+    try { await panggil("/api/notif/hapus", { endpoint: sub.endpoint }); } catch (e) {}
+    await sub.unsubscribe();
+  }
+  setTimeout(async () => {
+    try { const s = await langgananNotif(); if (s && Notification.permission === "granted") await panggil("/api/notif/daftar", { sub: s.toJSON() }); } catch (e) {}
+  }, 5000);
+  const lembar = document.createElement("div");
+  lembar.className = "sheet";
+  lembar.id = "sheet-perangkat";
+  document.body.appendChild(lembar);
+  lembar.addEventListener("click", e => { if (e.target === lembar) lembar.classList.remove("buka"); });
+  async function bukaPerangkat() {
+    lembar.innerHTML = '<div class="sheet-isi"><div class="sh-head"><span class="sh-tile">' + IK.hp + '</span><div class="sh-judul"><h3>Perangkat masuk</h3></div><button class="sh-x" aria-label="Tutup">✕</button></div><p class="kosong">Memuat...</p></div>';
+    lembar.classList.add("buka");
+    $(".sh-x", lembar).onclick = () => lembar.classList.remove("buka");
+    let j;
+    try { j = await panggil("/api/perangkat"); } catch (e) { $(".kosong", lembar).textContent = e.message; return; }
+    const tgl2 = t => new Date(t).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    $(".kosong", lembar).outerHTML =
+      '<p class="muted" style="margin:10px 0">Akun ' + (j.maks === 2 ? "VIP" : "biasa") + " bisa dipakai di " + j.maks + " HP. Masuk di HP baru otomatis mengeluarkan HP paling lama.</p>" +
+      j.perangkat.map(p => '<div class="pr-baris"><span class="pr-ik">' + IK.hp + '</span><div><b>' + p.nama + "</b><small>Masuk " + tgl2(p.dibuat) + "</small></div>" +
+        (p.ini ? '<em>HP ini</em>' : '<button data-keluarkan="' + p.id + '">Keluarkan</button>') + "</div>").join("");
+    $$("[data-keluarkan]", lembar).forEach(b => b.onclick = async () => {
+      b.disabled = true;
+      try { await panggil("/api/perangkat/hapus", { id: b.dataset.keluarkan }); toast("Perangkat dikeluarkan"); bukaPerangkat(); renderAkun(); }
+      catch (e) { toast(e.message); b.disabled = false; }
+    });
+  }
+  const baris = (ik, teks, ekstra) => '<span class="ak-ik">' + ik + '</span><span class="ak-tx">' + teks + "</span>" + (ekstra || "") + '<span class="ak-pn">' + IK.panah + "</span>";
+  if (typeof renderAkun === "function") {
+    const renderAkunSblm = renderAkun;
+    renderAkun = function () {
+      renderAkunSblm();
+      const menu = $("#page-akun .ak-menu");
+      if (!menu) return;
+      const sesudah = menu.firstChild ? menu.firstChild.nextSibling : null;
+      const ab = document.createElement("button");
+      ab.className = "ak-row";
+      ab.innerHTML = baris(IK.kal, "Absen harian", '<em class="ak-nw" hidden>Ambil koin</em>');
+      ab.onclick = () => pindah("absen");
+      menu.insertBefore(ab, sesudah);
+      panggil("/api/absen").then(a => { const em = $(".ak-nw", ab); if (em && !a.sudah) { em.hidden = false; em.textContent = "Ambil " + (a.hadiah[a.hari % 7] === "vip" ? "VIP" : a.hadiah[a.hari % 7] + " koin"); } }).catch(() => {});
+      const nt = document.createElement("button");
+      nt.className = "ak-row";
+      nt.innerHTML = '<span class="ak-ik">' + IK.lonceng + '</span><span class="ak-tx">Notifikasi episode baru</span><span class="ak-sw"><i></i></span>';
+      menu.insertBefore(nt, sesudah);
+      const aturSw = on => nt.classList.toggle("on", !!on);
+      langgananNotif().then(s => aturSw(s && Notification.permission === "granted")).catch(() => {});
+      nt.onclick = async () => {
+        const nyala = nt.classList.contains("on");
+        nt.disabled = true;
+        try {
+          if (nyala) { await matikanNotif(); aturSw(false); toast("Notifikasi dimatikan"); }
+          else { await nyalakanNotif(); aturSw(true); toast("Notifikasi nyala. Kamu dikabari tiap ada episode baru"); }
+        } catch (e) { toast(e.message); }
+        nt.disabled = false;
+      };
+      const pr = document.createElement("button");
+      pr.className = "ak-row";
+      pr.innerHTML = baris(IK.hp, "Perangkat masuk", '<em class="ak-jml"></em>');
+      pr.onclick = bukaPerangkat;
+      menu.insertBefore(pr, $("#b-keluar", menu) || null);
+      panggil("/api/perangkat").then(j => { const em = $(".ak-jml", pr); if (em) em.textContent = j.perangkat.length + " dari " + j.maks; }).catch(() => {});
+    };
+    if (typeof halaman !== "undefined" && halaman === "akun") renderAkun();
+  }
+  if (typeof setSesi === "function") {
+    const setSesiSblm = setSesi;
+    let kunciLama = masuk() ? SESI.user.id : 0;
+    setSesi = function (t, u) {
+      setSesiSblm(t, u);
+      const k = masuk() ? SESI.user.id : 0;
+      if (k === kunciLama) return;
+      kunciLama = k; ABSEN = null;
+      muatSuka();
+      if (typeof halaman !== "undefined" && halaman === "absen") renderAbsen();
+    };
+  }
+  muatSuka();
 })();
