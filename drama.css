@@ -1,4 +1,3 @@
-/* ===== FEED DRAMA ===== */
 #feed{display:none;position:fixed;left:0;right:0;top:0;bottom:calc(var(--nav) + env(safe-area-inset-bottom));z-index:20;background:#000}
 body.mode-feed #feed{display:block}
 body.mode-feed .topbar,body.mode-feed #page-home{display:none}
@@ -31,8 +30,6 @@ body.mode-feed{overflow:hidden}
 .fd-tab button.on{color:#fff;font-weight:800;border-color:var(--gold)}
 .ik{width:24px;height:24px;fill:#fff}
 .fd-kosong{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px;color:var(--redup)}
-
-/* ===== LEMBAR LANGGANAN ===== */
 .sheet{position:fixed;inset:0;z-index:95;background:rgba(5,3,10,.72);display:flex;flex-direction:column;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .25s}
 .sheet.buka{opacity:1;pointer-events:auto}
 .sheet-isi{background:var(--card);border-top:1px solid var(--gold);border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom));max-width:560px;width:100%;margin:0 auto;transform:translateY(30px);transition:transform .25s;max-height:88vh;overflow-y:auto}
@@ -55,8 +52,6 @@ body.mode-feed{overflow:hidden}
 .sh-login{margin-top:12px;text-align:center}
 .sh-login a{color:var(--gold);font-size:13px}
 #sh-gbtn{display:flex;justify-content:center;min-height:44px;margin-bottom:8px}
-
-/* ===== KATALOG VIP & DETAIL ===== */
 .vp-head{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 12px}
 .vp-head h2{font-size:18px;color:var(--gold)}
 .vp-banner{display:flex;align-items:center;gap:10px;background:#2a1f12;border:1px solid var(--gold);border-radius:14px;padding:12px}
@@ -97,8 +92,6 @@ body.mode-feed{overflow:hidden}
 .ep-btn.kunci{color:var(--redup)}
 .ep-btn.kunci svg{width:11px;height:11px;fill:var(--redup)}
 .ep-btn.terakhir{background:var(--gold);color:#2a1700;border-color:var(--gold);font-weight:800}
-
-/* ===== PEMUTAR EPISODE ===== */
 #ep-player{position:fixed;inset:0;z-index:90;background:#000;display:none}
 #ep-player.buka{display:block}
 #ep-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
@@ -114,8 +107,6 @@ body.mode-feed{overflow:hidden}
 .ep-bar i{display:block;height:100%;width:0;background:var(--gold)}
 #ep-player .fd-jeda{top:50%}
 #ep-player.jeda .fd-jeda{display:grid}
-
-/* ===== CARI ===== */
 #cari-drama{position:fixed;inset:0;z-index:92;background:var(--bg);display:none;flex-direction:column}
 #cari-drama.buka{display:flex}
 .cr-atas{display:flex;gap:8px;align-items:center;padding:calc(10px + env(safe-area-inset-top)) 12px 10px;border-bottom:1px solid var(--line)}
@@ -125,13 +116,9 @@ body.mode-feed{overflow:hidden}
 .cr-baris{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:8px 0;border-bottom:1px solid var(--line)}
 .cr-baris .dr-pst{width:48px;flex:none}
 .cr-baris small{display:block;color:var(--redup);font-size:12px;margin-top:2px}
-
-/* ===== AKTIVITAS: LANJUT NONTON ===== */
 .lanjut-list{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .lanjut-list::-webkit-scrollbar{display:none}
 .lanjut-list .dr-kartu{width:96px;flex:none}
-
-/* ===== NOTIF INSTALL APLIKASI (VERSI BARU) ===== */
 #install-bar{display:none!important}
 #pasang-app{position:fixed;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top));z-index:120;display:flex;align-items:center;gap:10px;padding:10px 8px 10px 10px;background:var(--card);border:1px solid var(--gold);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.55);transform:translateY(-160%);transition:transform .35s;max-width:520px;margin:0 auto}
 #pasang-app.buka{transform:none}
@@ -142,11 +129,8 @@ body.mode-feed{overflow:hidden}
 .pa-btn{padding:9px 16px;border-radius:99px;font-weight:800;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#2a1700;flex:none}
 .pa-x{width:32px;height:32px;border-radius:50%;color:var(--redup);font-size:14px;flex:none}
 #akun-pasang{margin-top:10px}
-/* ===== FEED TANPA GAMBAR SAMPUL ===== */
 .fd-slide{background-image:none!important;background:#000}
 .fd-slide::before{display:none}
-
-/* ===== PEMUTAR EPISODE GESER + KOMENTAR + FOTO PROFIL ===== */
 #ep-list{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
 #ep-list::-webkit-scrollbar{display:none}
 .ep-slide{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;background:#000}
@@ -197,27 +181,19 @@ body.mode-feed{overflow:hidden}
 .akun-foto{position:relative;width:84px;height:84px;margin:0 auto 10px}
 .akun-av{width:84px;height:84px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:34px;font-weight:900;color:#fff}
 .akun-ganti{position:absolute;right:-2px;bottom:-2px;width:32px;height:32px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:15px;cursor:pointer;border:2px solid var(--card)}
-
-/* ===== CEGAH TEKAN LAMA PADA VIDEO ===== */
 video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #feed,#ep-player{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-
-/* ===== DRAMA BERIKUTNYA DI PEMUTAR ===== */
 .ep-lanjut{background:#000 center/cover no-repeat}
 .ep-lanjut::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.6)}
 .ep-lanjut-isi{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center}
 .ep-lanjut-isi small{color:var(--gold);font-weight:800;letter-spacing:.5px;text-transform:uppercase;font-size:12px}
 .ep-lanjut-isi b{font-size:20px;line-height:1.3}
 .ep-lanjut-isi span{color:var(--redup);font-size:13px}
-
-/* ===== TARIK KE BAWAH UNTUK REFRESH ===== */
 #fd-tarik{position:absolute;left:50%;top:calc(56px + env(safe-area-inset-top));z-index:6;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;opacity:0;transform:translate(-50%,0);transition:transform .25s,opacity .25s;pointer-events:none}
 #fd-tarik i{width:20px;height:20px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:var(--gold)}
 #fd-tarik.siap i{border-color:var(--gold)}
 #fd-tarik.muat i{border-color:rgba(255,255,255,.35);border-top-color:var(--gold);animation:fdPutar .7s linear infinite}
 @keyframes fdPutar{to{transform:rotate(360deg)}}
-
-/* ===== KARTU DRAMA ALA MELOLO ===== */
 .dr-grid{column-gap:10px;row-gap:18px}
 .dr-pst{aspect-ratio:5/7;border-radius:8px}
 .dr-jml{display:none}
@@ -225,15 +201,83 @@ video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .dr-prog i{display:block;height:100%;background:#fff;border-radius:3px}
 .dr-nama{font-size:13px;font-weight:600;margin-top:7px;line-height:1.35;min-height:2.7em;color:#f1ecfb}
 .dr-ket{font-size:12px;color:var(--redup);margin-top:2px}
-
-/* ===== TANDA AIR KECIL DI BAWAH BAGIKAN ===== */
 .ep-tanda{max-width:76px;margin-top:2px;text-align:center;font-size:8.5px;line-height:1.25;font-weight:700;color:rgba(255,255,255,.75);text-shadow:0 1px 2px rgba(0,0,0,.8);word-break:break-all;pointer-events:none;user-select:none}
 .ep-tanda:empty{display:none}
-
-/* ===== OTP DAFTAR ===== */
 .otp-baris{display:flex;gap:8px;align-items:stretch;margin-top:10px}
 .otp-baris input{flex:1;min-width:0;letter-spacing:2px;margin-top:0!important}
 .otp-kirim{flex:none;width:auto!important;margin:0!important;padding:0 14px!important;white-space:nowrap;font-size:13px}
 .otp-kirim:disabled{opacity:.6}
 .otp-ket{font-size:12px;margin:6px 0 4px}
-
+html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#fd-list,#ep-list{touch-action:pan-y}
+@media (display-mode: standalone) {
+  html:not(.sp-sudah) body::after {
+    content: ""; position: fixed; inset: 0; background: #000; z-index: 2147483000;
+    animation: spTutupPaksa 0s linear 5s forwards;
+  }
+}
+@keyframes spTutupPaksa { to { visibility: hidden; opacity: 0; } }
+#sp-buka{position:fixed;inset:0;z-index:2147483001;background:radial-gradient(circle at 50% 46%,#1a0f33 0,#000 70%);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#sp-buka canvas{position:absolute;inset:0;width:100%;height:100%}
+#sp-buka .sp-rays{position:absolute;left:50%;top:44%;width:190vmax;aspect-ratio:1;transform:translate(-50%,-50%);opacity:0;background:repeating-conic-gradient(from 0deg,#f4c04a33 0 6deg,transparent 6deg 22deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 30%);mask:radial-gradient(circle,#000 0,transparent 30%)}
+#sp-buka .sp-ring{position:absolute;left:50%;top:44%;width:min(40vw,220px);aspect-ratio:1;border-radius:50%;border:3px solid #ffe7a3;box-shadow:0 0 18px #f4c04a,inset 0 0 18px #f4c04a;transform:translate(-50%,-50%) scale(.2);opacity:0}
+#sp-buka .sp-ring.r2{border-width:2px}
+#sp-buka .sp-logo{position:absolute;left:50%;top:44%;width:min(52vw,280px);transform:translate(-50%,-50%) scale(2.6);opacity:0;border-radius:22%;overflow:hidden;filter:drop-shadow(0 0 22px #f4c04a99)}
+#sp-buka .sp-logo img{display:block;width:100%}
+#sp-buka .sp-logo::after{content:"";position:absolute;inset:-30%;background:linear-gradient(105deg,transparent 42%,#fff9 50%,transparent 58%);transform:translateX(-130%)}
+#sp-buka .sp-judul{position:absolute;left:0;right:0;top:64%;display:flex;flex-direction:column;align-items:center;gap:10px}
+#sp-buka .sp-kata{position:relative;display:flex;isolation:isolate;transform:skewX(-9deg);filter:drop-shadow(0 3px 0 #5a3200) drop-shadow(0 0 14px #f4c04a88) drop-shadow(0 8px 10px #000)}
+#sp-buka .sp-kata span{position:relative;display:block;font:italic 900 clamp(42px,13vw,72px)/1 "Arial Black",Impact,system-ui,sans-serif;letter-spacing:.04em;opacity:0;background:linear-gradient(180deg,#fffbe6 0%,#ffe08a 30%,#f4b63a 48%,#a8640c 52%,#f1b13c 72%,#ffe7a3 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1px #fff3c455}
+#sp-buka .sp-kata span::after{content:attr(data-c);position:absolute;inset:0;color:transparent;-webkit-text-stroke:1.3px #fff8dc;clip-path:inset(0 0 55% 0);opacity:.9}
+#sp-buka .sp-kata::after{content:"";position:absolute;inset:-6px -14px;background:linear-gradient(100deg,transparent 40%,#ffffffcc 50%,transparent 60%);mix-blend-mode:overlay;transform:translateX(-120%);opacity:0}
+#sp-buka .sp-flare{position:absolute;left:50%;top:38%;width:0;height:3px;transform:translate(-50%,-50%);background:linear-gradient(90deg,transparent,#fff 50%,transparent);box-shadow:0 0 16px #ffe7a3,0 0 30px #f4c04a;opacity:0}
+#sp-buka .sp-aura{position:absolute;left:50%;top:40%;width:150%;height:200%;transform:translate(-50%,-50%);background:radial-gradient(ellipse at center,#f4c04a66 0,#f59e0b22 40%,transparent 70%);opacity:0;z-index:-1}
+#sp-buka .sp-orbit{position:absolute;left:50%;top:42%;width:130%;aspect-ratio:1;transform:translate(-50%,-50%) rotateX(78deg);border-radius:50%;border:2px solid #ffe7a3;box-shadow:0 0 14px #f4c04a,inset 0 0 14px #f4c04a;opacity:0;z-index:-1}
+#sp-buka .sp-orbit.o2{width:110%;border-color:#f59e0b;border-style:dashed}
+#sp-buka .sp-garis{display:flex;align-items:center;gap:6px;width:min(78vw,420px);opacity:0}
+#sp-buka .sp-garis i{flex:1;height:2px;background:linear-gradient(90deg,transparent,#f4c04a)}
+#sp-buka .sp-garis i:last-child{background:linear-gradient(270deg,transparent,#f4c04a)}
+#sp-buka .sp-garis b{width:8px;height:8px;background:#ffe7a3;transform:rotate(45deg);box-shadow:0 0 8px #f4c04a}
+#sp-buka .sp-sub{font:700 clamp(11px,3.4vw,16px)/1 system-ui,sans-serif;letter-spacing:.42em;padding-left:.42em;color:#fff;opacity:0;text-shadow:0 0 10px #f4c04a99;white-space:nowrap}
+#sp-buka.run .sp-kata span{animation:spHurufHantam .45s cubic-bezier(.3,1.6,.5,1) calc(1.45s + var(--i)*.08s) forwards}
+#sp-buka.run .sp-kata{animation:spKataGetar .32s linear 1.45s 1,spKataPulse 1.2s ease-in-out 2.1s infinite alternate}
+#sp-buka.run .sp-kata::after{animation:spSapu .7s ease 2.05s forwards}
+#sp-buka.run .sp-flare{animation:spFlare .6s ease-out 1.95s}
+#sp-buka.run .sp-aura{animation:spAura 1.2s ease-in-out 2.05s infinite alternate}
+#sp-buka.run .sp-orbit{animation:spOrbitMasuk .5s ease 2.05s forwards,spOrbitPutar 2.4s linear 2.05s infinite}
+#sp-buka.run .sp-orbit.o2{animation:spOrbitMasuk .5s ease 2.2s forwards,spOrbitPutar 1.8s linear 2.2s infinite reverse}
+#sp-buka.run .sp-garis{animation:spLebar .5s ease 2s forwards}
+#sp-buka.run .sp-sub{animation:spSubMasuk .6s cubic-bezier(.2,.9,.3,1) 2.15s forwards,spGlitch 2.2s steps(1) 2.75s infinite}
+@keyframes spHurufHantam{0%{opacity:0;transform:scale(3) translateY(-10px);filter:blur(6px)}60%{opacity:1;filter:none}100%{opacity:1;transform:none}}
+@keyframes spKataGetar{0%,100%{transform:skewX(-9deg)}25%{transform:skewX(-9deg) translate(-3px,2px)}50%{transform:skewX(-9deg) translate(3px,-2px)}75%{transform:skewX(-9deg) translate(-2px,-1px)}}
+@keyframes spKataPulse{from{filter:drop-shadow(0 3px 0 #5a3200) drop-shadow(0 0 10px #f4c04a77) drop-shadow(0 8px 10px #000)}to{filter:drop-shadow(0 3px 0 #5a3200) drop-shadow(0 0 26px #ffd36acc) drop-shadow(0 8px 10px #000)}}
+@keyframes spSapu{0%{opacity:1;transform:translateX(-120%)}100%{opacity:1;transform:translateX(120%)}}
+@keyframes spFlare{0%{opacity:0;width:0}30%{opacity:1;width:120%}100%{opacity:0;width:140%}}
+@keyframes spAura{from{opacity:.5;transform:translate(-50%,-50%) scale(.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+@keyframes spOrbitMasuk{from{opacity:0}to{opacity:.85}}
+@keyframes spOrbitPutar{from{transform:translate(-50%,-50%) rotateX(78deg) rotateZ(0)}to{transform:translate(-50%,-50%) rotateX(78deg) rotateZ(360deg)}}
+@keyframes spLebar{from{opacity:0;transform:scaleX(.1)}to{opacity:1;transform:none}}
+@keyframes spSubMasuk{from{opacity:0;letter-spacing:1.2em;filter:blur(5px)}to{opacity:1;letter-spacing:.42em;filter:none}}
+@keyframes spGlitch{0%,100%{text-shadow:0 0 10px #f4c04a99;transform:none}4%{text-shadow:-2px 0 #ff3b6b,2px 0 #3bd5ff;transform:translateX(2px)}8%{text-shadow:2px 0 #ff3b6b,-2px 0 #3bd5ff;transform:translateX(-2px)}12%{text-shadow:0 0 10px #f4c04a99;transform:none}}
+#sp-buka .sp-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,#fff 0,#ffe7a3 35%,transparent 75%);opacity:0;pointer-events:none}
+#sp-buka .sp-bar{position:absolute;left:0;right:0;height:0;background:#000;z-index:5}
+#sp-buka .sp-bar.t{top:0}#sp-buka .sp-bar.u{bottom:0}
+#sp-buka.run{animation:spGetar .5s linear 1s}
+#sp-buka.run .sp-flash{animation:spKilat .55s ease-out 1s}
+#sp-buka.run .sp-logo{animation:spHantam .38s cubic-bezier(.6,0,.4,1) .98s forwards}
+#sp-buka.run .sp-logo::after{animation:spKilau .8s ease 1.7s forwards}
+#sp-buka.run .sp-ring{animation:spGelombang .9s ease-out 1.05s forwards}
+#sp-buka.run .sp-ring.r2{animation:spGelombang 1.1s ease-out 1.2s forwards}
+#sp-buka.run .sp-rays{animation:spSinar 2.2s ease-out 1s forwards,spPutar 8s linear 1s infinite}
+#sp-buka.run .sp-bar{animation:spSinema .5s ease 0s forwards,spSinemaBuka .4s ease 2.9s forwards}
+#sp-buka.pergi{transition:opacity .5s ease,transform .5s ease;opacity:0;transform:scale(1.08);pointer-events:none}
+@keyframes spGetar{0%,100%{transform:none}10%{transform:translate(-7px,4px)}20%{transform:translate(6px,-5px)}30%{transform:translate(-5px,-3px)}40%{transform:translate(5px,4px)}55%{transform:translate(-3px,2px)}70%{transform:translate(2px,-2px)}85%{transform:translate(-1px,1px)}}
+@keyframes spKilat{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+@keyframes spHantam{0%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}70%{opacity:1;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes spKilau{to{transform:translateX(130%)}}
+@keyframes spGelombang{0%{opacity:1;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(3.2)}}
+@keyframes spSinar{0%{opacity:0}30%{opacity:1}100%{opacity:.55}}
+@keyframes spPutar{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes spSinema{to{height:9%}}
+@keyframes spSinemaBuka{to{height:0}}
+@media (prefers-reduced-motion:reduce){#sp-buka.run *{animation-duration:.01s!important;animation-delay:0s!important}}
