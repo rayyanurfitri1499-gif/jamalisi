@@ -232,9 +232,8 @@
   function selesaiCuplikan(d) {
     if (bolehEp(d, 2) && d.jml_ep > 1) bukaEpisode(d, 2);
     else if (d.jml_ep > 1) bukaSheet(d, 1);
-  }
-
-  list.addEventListener("click", e => {
+    }
+    list.addEventListener("click", e => {
     const semua = e.target.closest("[data-semua]");
     if (semua) {
       const d = cariDrama(semua.dataset.semua);
@@ -245,7 +244,7 @@
     }
     const km = e.target.closest("[data-komen]");
     if (km) { bukaKomentar(cariDrama(km.dataset.komen)); return; }
-        const fav = e.target.closest("[data-fav-drama]");
+    const fav = e.target.closest("[data-fav-drama]");
     if (fav) { toggleFav(cariDrama(fav.dataset.favDrama)); return; }
     const bg = e.target.closest("[data-bagi]");
     if (bg) { bagikan(cariDrama(bg.dataset.bagi)); return; }
@@ -492,7 +491,7 @@
   let jariTurun = false;
   function cekKartuPindah() {
     if (!pemutar.classList.contains("buka") || pindahDrama || jariTurun) return;
-        if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
+    if (Date.now() < kunciGeser) { setTimeout(cekKartuPindah, kunciGeser - Date.now() + 60); return; }
     const h = epList.clientHeight || 1;
     const s = epSlides[Math.round(epList.scrollTop / h)];
     if (!s || Math.abs(s.offsetTop - epList.scrollTop) > h * 0.4) return;
@@ -505,8 +504,7 @@
   pemutar.addEventListener("touchstart", () => { jariTurun = true; clearTimeout(tCekPindah); }, { passive: true });
   document.addEventListener("touchend", () => { jariTurun = false; jadwalCek(); }, { passive: true });
   document.addEventListener("touchcancel", () => { jariTurun = false; jadwalCek(); }, { passive: true });
-
-  /* tanda air kecil di bawah tombol Bagikan: email + ID penonton */
+    /* tanda air kecil di bawah tombol Bagikan: email + ID penonton */
   function isiTanda() {
     const u = SESI.user;
     const teks = u ? esc(u.email || "") + "<br>ID " + esc(String(u.id || "")) : "";
@@ -728,8 +726,7 @@
     '<div id="km-list"></div><div id="km-bawah"></div></div>';
   document.body.appendChild(komen);
   let komenD = null;
-
-  const waktuLalu = t => {
+    const waktuLalu = t => {
     const s = (Date.now() - t) / 1000;
     if (s < 60) return "baru saja";
     if (s < 3600) return Math.floor(s / 60) + " menit lalu";
@@ -739,7 +736,7 @@
   };
   function avatarHTML(nama, foto, kelas) {
     if (foto) return '<img class="' + kelas + '" src="' + esc(foto) + '" alt="" referrerpolicy="no-referrer" loading="lazy">';
-        const h = String(nama || "?").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+    const h = String(nama || "?").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
     return '<span class="' + kelas + ' km-inisial" style="background:hsl(' + h + ',55%,42%)">' + esc(String(nama || "?").trim().charAt(0).toUpperCase() || "?") + "</span>";
   }
   function barisKomentar(k) {
@@ -986,7 +983,7 @@
   }
   const renderAkunFoto = renderAkun;
   renderAkun = function () {
-        renderAkunFoto();
+    renderAkunFoto();
     const u = SESI.user, av = $("#page-akun .avatar");
     if (!u || !av) return;
     av.outerHTML = '<div class="akun-foto">' + avatarHTML(u.nama, u.foto, "akun-av") +
@@ -1005,8 +1002,7 @@
     };
   };
   if (halaman === "akun") renderAkun();
-
-  /* ======================= OTP SAAT DAFTAR ======================= */
+    /* ======================= OTP SAAT DAFTAR ======================= */
   let otpMundur = 0, otpTimer = null;
   function aturTombolOtp() {
     const b = $("#otp-kirim");
@@ -1092,6 +1088,15 @@
     cariLama.placeholder = "Cari drama...";
     cariLama.addEventListener("focus", e => { e.target.blur(); bukaCari(); });
   }
+
+  /* ======================= CEGAH LAYAR DIPERBESAR (ZOOM) ======================= */
+  document.addEventListener("touchmove", e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  ["gesturestart", "gesturechange", "gestureend"].forEach(n => document.addEventListener(n, e => e.preventDefault(), { passive: false }));
+  (function pasangViewport() {
+    let m = document.querySelector('meta[name="viewport"]');
+    if (!m) { m = document.createElement("meta"); m.name = "viewport"; document.head.appendChild(m); }
+    m.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover";
+  })();
 
   /* ======================= CEGAH TEKAN LAMA (DOWNLOAD VIDEO) ======================= */
   document.addEventListener("contextmenu", e => {
@@ -1231,4 +1236,111 @@
   new MutationObserver(hapus).observe(list, { childList: true });
   hapus();
 })();
-      
+/* ===== ANIMASI PEMBUKA (hanya saat dibuka dari ikon aplikasi) ===== */
+(function () {
+  const root = document.documentElement;
+  const selesai = () => root.classList.add("sp-sudah");
+  const standalone = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  let sudah = false;
+  try { sudah = sessionStorage.getItem("sp-buka") === "1"; sessionStorage.setItem("sp-buka", "1"); } catch (e) {}
+  if (!standalone || sudah) { selesai(); return; }
+
+  const box = document.createElement("div");
+  box.id = "sp-buka";
+  box.innerHTML =
+    '<div class="sp-rays"></div><canvas></canvas>' +
+    '<div class="sp-ring"></div><div class="sp-ring r2"></div>' +
+    '<div class="sp-logo"><img alt="" src="logo-buka.png"></div>' +
+    '<div class="sp-judul"><div class="sp-kata">' +
+    "DRAMA".split("").map((c, i) => '<span style="--i:' + i + '" data-c="' + c + '">' + c + '</span>').join("") +
+    '<div class="sp-flare"></div><div class="sp-aura"></div><div class="sp-orbit"></div><div class="sp-orbit o2"></div></div>' +
+    '<div class="sp-garis"><i></i><b></b><i></i></div><div class="sp-sub">NONTON TANPA BATAS</div></div>' +
+    '<div class="sp-flash"></div><div class="sp-bar t"></div><div class="sp-bar u"></div>';
+  const img = box.querySelector("img");
+  img.onerror = () => { img.onerror = null; img.src = "icon-512.png"; };
+  document.body.appendChild(box);
+  selesai();
+
+  const cv = box.querySelector("canvas"), ctx = cv.getContext("2d");
+  let P = [], t0 = 0, raf = 0, W = 0, H = 0, cx = 0, cy = 0, meledak = false, tutup = false;
+  const ukur = () => {
+    const d = Math.min(2, window.devicePixelRatio || 1);
+    W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d;
+    ctx.setTransform(d, 0, 0, d, 0, 0); cx = W / 2; cy = H * 0.44;
+  };
+  const acak = (a, b) => a + Math.random() * (b - a);
+  const R = () => Math.min(W, H);
+  const hisap = () => { const a = acak(0, 6.283), r = acak(R() * 0.55, R() * 0.95); P.push({ k: 0, a, r, v: acak(2.2, 4), s: acak(1, 2.4) }); };
+  const ledak = () => { for (let i = 0; i < 90; i++) { const a = acak(0, 6.283), v = acak(2, 9); P.push({ k: 1, x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, s: acak(1, 3), l: 1 }); } };
+  const bara = () => P.push({ k: 2, x: acak(0, W), y: H + 5, vy: acak(.4, 1.3), vx: acak(-.3, .3), s: acak(1, 2.6), l: 1, f: acak(0, 6) });
+
+  let huruf = [], sudahH = [];
+  const posHuruf = () => {
+    huruf = [...box.querySelectorAll(".sp-kata span")].map(el => {
+      const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    });
+    sudahH = [];
+  };
+  const percik = (x, y, n) => { for (let i = 0; i < n; i++) { const a = acak(0, 6.283), v = acak(1.5, 6); P.push({ k: 1, x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 1, s: acak(.8, 2.2), l: 1 }); } };
+  const petir = (x1, y1, x2, y2, w) => {
+    ctx.strokeStyle = "rgba(255,240,190,.95)"; ctx.shadowColor = "#f4c04a"; ctx.shadowBlur = 12; ctx.lineWidth = w;
+    ctx.beginPath(); ctx.moveTo(x1, y1);
+    for (let i = 1; i <= 8; i++) { const t = i / 8; ctx.lineTo(x1 + (x2 - x1) * t + (i < 8 ? acak(-9, 9) : 0), y1 + (y2 - y1) * t + (i < 8 ? acak(-9, 9) : 0)); }
+    ctx.stroke(); ctx.shadowBlur = 0;
+  };
+
+  function gambar(t) {
+    const e = (t - t0) / 1000;
+    ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = "lighter";
+    if (e < 1) {
+      for (let i = 0; i < 6; i++) hisap();
+      const rr = R() * 0.35 * e + 4, g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr);
+      g.addColorStop(0, "rgba(255,231,163," + (0.9 * e) + ")"); g.addColorStop(1, "rgba(244,192,74,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, rr, 0, 7); ctx.fill();
+    }
+    if (e >= 1 && !meledak) { meledak = true; P = P.filter(p => p.k !== 0); ledak(); }
+    if (e > 1.3 && e < 3.3 && Math.random() < 0.5) bara();
+    for (let h = 0; h < huruf.length; h++) if (!sudahH[h] && e >= 1.65 + h * 0.08) { sudahH[h] = 1; percik(huruf[h].x, huruf[h].y, 22); }
+    if (e > 2.1 && e < 3.2 && huruf.length && Math.random() < 0.18) {
+      const A = huruf[0], Z = huruf[huruf.length - 1];
+      petir(A.x - 30, A.y + acak(-25, 25), Z.x + 30, Z.y + acak(-25, 25), acak(1, 2.2));
+    }
+    for (let j = P.length - 1; j >= 0; j--) {
+      const p = P[j];
+      if (p.k === 0) {
+        p.r -= p.v * (1 + (R() * 0.95 - p.r) / 60);
+        if (p.r < 6) { P.splice(j, 1); continue; }
+        ctx.strokeStyle = "rgba(255,214,120,.85)"; ctx.lineWidth = p.s; ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(p.a) * p.r, cy + Math.sin(p.a) * p.r);
+        ctx.lineTo(cx + Math.cos(p.a) * (p.r + 14), cy + Math.sin(p.a) * (p.r + 14)); ctx.stroke();
+      } else if (p.k === 1) {
+        p.x += p.vx; p.y += p.vy; p.vx *= .95; p.vy = p.vy * .95 + .06; p.l -= .016;
+        if (p.l <= 0) { P.splice(j, 1); continue; }
+        ctx.fillStyle = "rgba(255," + (180 + Math.random() * 60 | 0) + ",90," + p.l + ")";
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 7); ctx.fill();
+      } else {
+        p.y -= p.vy; p.f += .05; p.x += p.vx + Math.sin(p.f) * .3; p.l -= .004;
+        if (p.l <= 0 || p.y < -5) { P.splice(j, 1); continue; }
+        ctx.fillStyle = "rgba(255,170,60," + (p.l * .8) + ")";
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 7); ctx.fill();
+      }
+    }
+    ctx.globalCompositeOperation = "source-over";
+    if (!tutup) raf = requestAnimationFrame(gambar);
+  }
+
+  function akhiri() {
+    if (tutup) return; tutup = true;
+    box.classList.add("pergi");
+    setTimeout(() => { cancelAnimationFrame(raf); box.remove(); }, 520);
+  }
+
+  ukur();
+  box.classList.add("run");
+  posHuruf();
+  const pelan = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!pelan) raf = requestAnimationFrame(t => { t0 = t; gambar(t); });
+  setTimeout(akhiri, pelan ? 900 : 3300);
+  box.addEventListener("click", akhiri);            // ketuk = lewati
+  setTimeout(akhiri, 6000);                          // pengaman
+})();
