@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TopUp Diamond</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="logo">💎 TopUp<span>Kilat</span></div>
+</header>
+
+<main>
+  <section class="card">
+    <h2><span class="no">1</span> Pilih Game</h2>
+    <div class="games" id="games"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">2</span> Masukkan Data Akun</h2>
+    <div class="row">
+      <input type="number" id="userId" placeholder="User ID">
+      <input type="number" id="zoneId" placeholder="Zone ID">
+    </div>
+    <p class="hint" id="hint">Contoh: 12345678 (1234)</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">3</span> Pilih Nominal</h2>
+    <div class="grid" id="nominal"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">4</span> Pilih Pembayaran</h2>
+    <div class="pay" id="pay"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="no">5</span> Nomor WhatsApp</h2>
+    <input type="tel" id="wa" placeholder="08xxxxxxxxxx">
+  </section>
+</main>
+
+<footer class="bar">
+  <div><small>Total</small><b id="total">Rp0</b></div>
+  <button id="beli">Beli Sekarang</button>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <h3>Konfirmasi Pesanan</h3>
+    <div id="ringkasan"></div>
+    <div class="aksi">
+      <button class="batal" id="batal">Batal</button>
+      <button id="lanjut">Bayar</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
