@@ -1,0 +1,36 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+body{background:#0f1020;color:#fff;padding-bottom:90px}
+.top{padding:14px 16px;background:#17182e;position:sticky;top:0;z-index:5}
+.logo{font-weight:800;font-size:20px}
+.logo span{color:#ffb800}
+main{padding:12px;max-width:600px;margin:auto}
+.card{background:#1b1d38;border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.no{background:#ffb800;color:#000;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px}
+.games{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.game{background:#25284a;border:2px solid transparent;border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer}
+.game .ic{font-size:28px}
+.game p{font-size:12px;margin-top:4px}
+.row{display:flex;gap:8px}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #33365e;background:#25284a;color:#fff;font-size:15px}
+.hint{font-size:12px;color:#9aa0c8;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.item{background:#25284a;border:2px solid transparent;border-radius:12px;padding:10px;cursor:pointer}
+.item b{display:block;font-size:14px;margin-bottom:4px}
+.item small{color:#ffb800;font-weight:700}
+.pay{display:flex;flex-direction:column;gap:8px}
+.met{display:flex;justify-content:space-between;align-items:center;background:#25284a;border:2px solid transparent;border-radius:12px;padding:12px;cursor:pointer;font-size:14px}
+.met span{color:#9aa0c8;font-size:12px}
+.aktif{border-color:#ffb800!important;background:#2e2a1a!important}
+.bar{position:fixed;bottom:0;left:0;right:0;background:#17182e;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #33365e}
+.bar small{color:#9aa0c8;display:block}
+.bar b{color:#ffb800;font-size:18px}
+button{background:#ffb800;color:#000;border:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal.buka{display:flex}
+.box{background:#1b1d38;border-radius:14px;padding:18px;width:100%;max-width:380px}
+.box h3{margin-bottom:12px}
+.box p{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:7px 0;border-bottom:1px dashed #33365e}
+.aksi{display:flex;gap:8px;margin-top:14px}
+.aksi button{flex:1}
+.batal{background:#33365e;color:#fff}
